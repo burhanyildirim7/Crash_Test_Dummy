@@ -5,22 +5,24 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
     public static GameController instance; // singleton yapisi icin gerekli ornek ayrintilar icin BeniOku 22. satirdan itibaren bak.
-
-
     [HideInInspector]public int score, elmas; // ayrintilar icin benioku 9. satirdan itibaren bak
-
     [HideInInspector] public bool isContinue;  // ayrintilar icin beni oku 19. satirdan itibaren bak
-
+    public float power, height;
+    public GameObject heightPlatform;
+    public Transform carTarget;
 
 	private void Awake()
 	{
         if (instance == null) instance = this;
-        //else Destroy(this);
+        else Destroy(this);
 	}
 
 	void Start()
     {
+        power = 5;
+        height = 5;
         isContinue = false;
+        SetHeightPlatform();
     }
 
 
@@ -36,7 +38,6 @@ public class GameController : MonoBehaviour
 
     }
 
-
     /// <summary>
     /// Bu fonksiyon geçerli leveldeki elmasi belirtilen miktarda artirir veya azaltir. Artirma icin +5 gibi pozitif eksiltme
     /// icin -5 gibi negatif deger girin.
@@ -49,8 +50,6 @@ public class GameController : MonoBehaviour
         PlayerPrefs.SetInt("totalElmas", PlayerPrefs.GetInt("totalElmas" + eklenecekElmas));
        // UIController.instance.SetTotalElmasText(); // totalElmaslarýn yazili oldugu texti
     }
-
-
     /// <summary>
     /// Oyun sonu x ler hesaplanip kac ile carpilacaksa parametre olacak o sayi gonderilmeli.
     /// </summary>
@@ -61,5 +60,26 @@ public class GameController : MonoBehaviour
         else score = 1 * score;
         PlayerPrefs.SetInt("totalScore", PlayerPrefs.GetInt("totalScore") + score);
     }
+
+
+    public void IncreasePower()
+	{
+        power++;
+	}
+
+    public void IncreaseHeight()
+	{
+        height++;
+        SetHeightPlatform();
+	}
+
+    public void SetHeightPlatform()
+	{
+        heightPlatform.transform.position = new Vector3(0, height, 0);
+        AracControl.instance.transform.position = carTarget.position;
+        AracControl.instance.transform.rotation = carTarget.rotation;
+        StartCoroutine(AracControl.instance.DelayAndActivateCar());
+    }
+
 
 }

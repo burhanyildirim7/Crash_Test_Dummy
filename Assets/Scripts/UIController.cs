@@ -22,7 +22,7 @@ public class UIController : MonoBehaviour
 
     private void Start()
     {
-        StartUI();
+       // StartUI();
     }
 
     // Oyun ilk acildiginda calisacak olan ui fonksiyonu. 
