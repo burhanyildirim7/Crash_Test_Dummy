@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.UI;
 
+
 public class PlayerController : MonoBehaviour
 {
     public static PlayerController instance;
@@ -15,6 +16,8 @@ public class PlayerController : MonoBehaviour
     int status = 0;
     bool canTap, isStatus1,isStatus2;
     float tempY;
+    public Animator playerAnimator;
+    public List<Rigidbody> ragDollsRb = new();
 
 
     private void Awake()
@@ -52,49 +55,6 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
-	/// <summary>
-	/// Playerin collider olaylari.. collectible, engel veya finish noktasi icin. Burasi artirilabilir.
-	/// elmas icin veya baska herhangi etkilesimler icin tag ekleyerek kontrol dongusune eklenir.
-	/// </summary>
-	/// <param name="other"></param>
-	private void OnTriggerEnter(Collider other)
-    {
-
-        if (other.CompareTag("collectible"))
-        {
-            // COLLECTIBLE CARPINCA YAPILACAKLAR...
-            GameController.instance.SetScore(collectibleDegeri); // ORNEK KULLANIM detaylar icin ctrl+click yapip fonksiyon aciklamasini oku
-
-        }
-        else if (other.CompareTag("engel"))
-        {
-            // ENGELELRE CARPINCA YAPILACAKLAR....
-            GameController.instance.SetScore(-collectibleDegeri); // ORNEK KULLANIM detaylar icin ctrl+click yapip fonksiyon aciklamasini oku
-            if (GameController.instance.score < 0) // SKOR SIFIRIN ALTINA DUSTUYSE
-			{
-                // FAİL EVENTLERİ BURAYA YAZILACAK..
-                GameController.instance.isContinue = false; // çarptığı anda oyuncunun yerinde durması ilerlememesi için
-                UIController.instance.ActivateLooseScreen(); // Bu fonksiyon direk çağrılada bilir veya herhangi bir effect veya animasyon bitiminde de çağrılabilir..
-                // oyuncu fail durumunda bu fonksiyon çağrılacak.. 
-			}
-
-
-        }
-        else if (other.CompareTag("finish")) 
-        {
-            // finishe collider eklenecek levellerde...
-            // FINISH NOKTASINA GELINCE YAPILACAKLAR... Totalscore artırma, x işlemleri, efektler v.s. v.s.
-            GameController.instance.isContinue = false;
-            GameController.instance.ScoreCarp(7);  // Bu fonksiyon normalde x ler hesaplandıktan sonra çağrılacak. Parametre olarak x i alıyor. 
-            // x değerine göre oyuncunun total scoreunu hesaplıyor.. x li olmayan oyunlarda parametre olarak 1 gönderilecek.
-            UIController.instance.ActivateWinScreen(); // finish noktasına gelebildiyse her türlü win screen aktif edilecek.. ama burada değil..
-            // normal de bu kodu x ler hesaplandıktan sonra çağıracağız. Ve bu kod çağrıldığında da kazanılan puanlar animasyonlu şekilde artacak..
-
-            
-        }
-
-    }
-
 
     /// <summary>
     /// Bu fonksiyon her level baslarken cagrilir. 
@@ -115,6 +75,7 @@ public class PlayerController : MonoBehaviour
 
     public IEnumerator ThrowPlayer()
 	{
+        playerAnimator.enabled = false;
         float power = GameController.instance.power + GameController.instance.height;
         float distance = 10 + power/2;
         float time = 0;
@@ -131,10 +92,13 @@ public class PlayerController : MonoBehaviour
             transform.position = pos;
             yield return new WaitForSeconds(.015f);
         }
+        OpenRagDolsRb();
+        canTap = false;
     }
 
     public IEnumerator Tap1()
     {
+        CloseRagDolsRb();
         StopCoroutine(ThrowPlayer());
         StartCoroutine(CalculateCoins2());
         float power = GameController.instance.power + GameController.instance.height;
@@ -153,10 +117,13 @@ public class PlayerController : MonoBehaviour
             transform.position = pos;
             yield return new WaitForSeconds(.015f);
         }
+        OpenRagDolsRb();
+        canTap = false;
     }
 
     public IEnumerator Tap2()
     {
+        CloseRagDolsRb();
         StopCoroutine(Tap1());
         StartCoroutine(CalculateCoins3());
         float power = GameController.instance.power + GameController.instance.height;
@@ -175,6 +142,8 @@ public class PlayerController : MonoBehaviour
             transform.position = pos;
             yield return new WaitForSeconds(.015f);
         }
+        OpenRagDolsRb();
+        canTap = false;
     }
 
     public IEnumerator CalculateCoins()
@@ -194,7 +163,7 @@ public class PlayerController : MonoBehaviour
             if (rnd == 0)
             {
                 GameObject coin = Instantiate(coinPrefab, pos, Quaternion.identity);
-                coin.transform.tag = "collectible";
+                coin.transform.tag = "para";
             }
             yield return new WaitForEndOfFrame();
         }
@@ -217,7 +186,7 @@ public class PlayerController : MonoBehaviour
             if (rnd == 0)
             {
                 GameObject coin = Instantiate(coinPrefab, pos, Quaternion.identity);
-                coin.transform.tag = "collectible";
+                coin.transform.tag = "para";
             }
             yield return new WaitForEndOfFrame();
         }
@@ -240,12 +209,25 @@ public class PlayerController : MonoBehaviour
             if (rnd == 0)
             {
                 GameObject coin = Instantiate(coinPrefab, pos, Quaternion.identity);
-                coin.transform.tag = "collectible";
+                coin.transform.tag = "para";
             }
             yield return new WaitForEndOfFrame();
         }
     }
 
+    void OpenRagDolsRb()
+	{
+        foreach(Rigidbody rb in ragDollsRb)
+		{
+            rb.useGravity = true;
+		}
+	}
 
-
+    void CloseRagDolsRb()
+    {
+        foreach (Rigidbody rb in ragDollsRb)
+        {
+            rb.useGravity = false;
+        }
+    }
 }

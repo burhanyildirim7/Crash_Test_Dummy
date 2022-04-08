@@ -10,9 +10,7 @@ TagManager:
   - engel
   - finish
   - collectible
-  - elmas
-  - DegersizEsya
-  - Missile
+  - para
   layers:
   - Default
   - TransparentFX

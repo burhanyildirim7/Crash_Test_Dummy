@@ -5,11 +5,12 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
     public static GameController instance; // singleton yapisi icin gerekli ornek ayrintilar icin BeniOku 22. satirdan itibaren bak.
-    [HideInInspector]public int score, elmas; // ayrintilar icin benioku 9. satirdan itibaren bak
     [HideInInspector] public bool isContinue;  // ayrintilar icin beni oku 19. satirdan itibaren bak
-    public float power, height;
+    public int power, height;
     public GameObject heightPlatform;
     public Transform carTarget;
+    [HideInInspector] public int para;
+    public List<GameObject> vehicles = new();
 
 	private void Awake()
 	{
@@ -19,67 +20,58 @@ public class GameController : MonoBehaviour
 
 	void Start()
     {
-        power = 5;
-        height = 5;
+        power = PlayerPrefs.GetInt("power");
+        height = PlayerPrefs.GetInt("height");
+        para = PlayerPrefs.GetInt("para");
+        power = 15;
+        height = 15;
         isContinue = false;
         SetHeightPlatform();
+        UIController.instance.SetPowerAndLevelText();
     }
-
-
-    /// <summary>
-    /// Bu fonksiyon geçerli leveldeki scoreu belirtilen miktarda artirir veya azaltir. Artirma icin +5 gibi pozitif eksiltme
-    /// icin -5 gibi negatif deger girin.
-    /// </summary>
-    /// <param name="eklenecekScore">Her collectible da ne kadar score eklenip cikarilacaksa parametre olarak o sayi verilmeli</param>
-    public void SetScore(int eklenecekScore)
-	{
-        if(PlayerController.instance.collectibleVarMi) score += eklenecekScore;
-        // Eðer oyunda collectible yok ise developer kendi score sistemini yazmalý...
-
-    }
-
-    /// <summary>
-    /// Bu fonksiyon geçerli leveldeki elmasi belirtilen miktarda artirir veya azaltir. Artirma icin +5 gibi pozitif eksiltme
-    /// icin -5 gibi negatif deger girin.
-    /// </summary>
-    /// <param name="eklenecekElmas">Her collectible da ne kadar elmas eklenip cikarilacaksa parametre olarak o sayi verilmeli</param>
-    public void SetElmas(int eklenecekElmas)
-    {
-        elmas += eklenecekElmas;
-        // buradaki elmas artýnca totalScore da otomatik olarak artacak.. bu sebeple asagidaki kodlar eklendi.
-        PlayerPrefs.SetInt("totalElmas", PlayerPrefs.GetInt("totalElmas" + eklenecekElmas));
-       // UIController.instance.SetTotalElmasText(); // totalElmaslarýn yazili oldugu texti
-    }
-    /// <summary>
-    /// Oyun sonu x ler hesaplanip kac ile carpilacaksa parametre olacak o sayi gonderilmeli.
-    /// </summary>
-    /// <param name="katsayi"></param>
-    public void ScoreCarp(int katsayi)
-	{
-        if (PlayerController.instance.xVarMi) score *= katsayi;
-        else score = 1 * score;
-        PlayerPrefs.SetInt("totalScore", PlayerPrefs.GetInt("totalScore") + score);
-    }
-
 
     public void IncreasePower()
 	{
-        power++;
+        if(para >= 20 * power)
+		{
+            power++;
+            para -= 20 * power;
+            PlayerPrefs.SetInt("para", para);
+            PlayerPrefs.SetInt("power", power);
+        }
+        UIController.instance.SetPowerAndLevelText();
 	}
 
     public void IncreaseHeight()
 	{
-        height++;
-        SetHeightPlatform();
-	}
+        if (para >= 20 * height)
+        {
+            height++;
+            SetHeightPlatform();
+            para -= 20 * height;
+            PlayerPrefs.SetInt("para", para);
+            PlayerPrefs.SetInt("height", height);
+        }
+        UIController.instance.SetPowerAndLevelText();
+    }
 
     public void SetHeightPlatform()
 	{
         heightPlatform.transform.position = new Vector3(0, height, 0);
         AracControl.instance.transform.position = carTarget.position;
         AracControl.instance.transform.rotation = carTarget.rotation;
-        StartCoroutine(AracControl.instance.DelayAndActivateCar());
+        
     }
+
+    public void SetVehicleType()
+	{
+        int type = (int) power / 5;
+        foreach(GameObject vehicle in vehicles)
+		{
+            vehicle.SetActive(false);
+		}
+        vehicles[type].SetActive(true);
+	}
 
 
 }

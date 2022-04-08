@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class UIController : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class UIController : MonoBehaviour
     public GameObject TapToStartPanel, LoosePanel, GamePanel, WinPanel, winScreenEffectObject, winScreenCoinImage, startScreenCoinImage, scoreEffect;
     public Text gamePlayScoreText, winScreenScoreText, levelNoText, tapToStartScoreText, totalElmasText;
     public Animator ScoreTextAnim;
+    public TextMeshProUGUI heightLevelText, powerLevelText, heightCostText, powerCostText;
+    public Text paraText;
 
 
 
@@ -22,7 +25,8 @@ public class UIController : MonoBehaviour
 
     private void Start()
     {
-       // StartUI();
+        // StartUI();
+        SetPowerAndLevelText();
     }
 
     // Oyun ilk acildiginda calisacak olan ui fonksiyonu. 
@@ -43,14 +47,9 @@ public class UIController : MonoBehaviour
     // TAPTOSTART TUSUNA BASILDISINDA  --- GIRIS EKRANINDA VE LEVEL BASLARINDA
     public void TapToStartButtonClick()
     {
-
+        StartCoroutine(AracControl.instance.DelayAndActivateCar());
         GameController.instance.isContinue = true;
-        //PlayerController.instance.SetArmForGaming();
         TapToStartPanel.SetActive(false);
-        GamePanel.SetActive(true);
-        SetLevelText(LevelController.instance.totalLevelNo);
-        SetGamePlayScoreText();
-
     }
 
     // RESTART TUSUNA BASILDISINDA  --- LOOSE EKRANINDA
@@ -98,7 +97,7 @@ public class UIController : MonoBehaviour
     /// </summary>
     public void WinScreenScore()
     {
-        winScreenScoreText.text = GameController.instance.score.ToString();
+        winScreenScoreText.text = GameController.instance.para.ToString();
     }
 
     /// <summary>
@@ -123,7 +122,7 @@ public class UIController : MonoBehaviour
         WinPanel.SetActive(true);
         winScreenScoreText.text = "0";
         int sayac = 0;
-        while (sayac < GameController.instance.score)
+        while (sayac < GameController.instance.para)
         {
             sayac += PlayerController.instance.collectibleDegeri;
             if (sayac % 2 * PlayerController.instance.collectibleDegeri == 0)
@@ -227,5 +226,28 @@ public class UIController : MonoBehaviour
     }
 
 
+    public void SetPowerAndLevelText()
+	{
+        powerLevelText.text = "Level " + PlayerPrefs.GetInt("power").ToString();
+        heightLevelText.text = "Level " + PlayerPrefs.GetInt("level").ToString();
+        powerCostText.text = (20 * GameController.instance.power).ToString();
+        heightCostText.text = (20 * GameController.instance.height).ToString();
+        SetParaText();
+	}
+
+    public void PowerButtonClick()
+	{
+        GameController.instance.IncreasePower();
+	}
+
+    public void HeightButtonClick()
+	{
+        GameController.instance.IncreaseHeight();
+	}
+
+    public void SetParaText()
+	{
+        paraText.text = PlayerPrefs.GetInt("para").ToString();
+	}
 
 }
