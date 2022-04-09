@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         StartingEvents();
-        StartCoroutine(CalculateCoins());
+       
     }
 
 	private void Update()
@@ -87,22 +87,31 @@ public class PlayerController : MonoBehaviour
 
     public IEnumerator ThrowPlayer()
 	{
+        StartCoroutine(CalculateCoins());
         playerAnimator.enabled = false;
         float power = GameController.instance.power + GameController.instance.height;
-        float distance = 10 + power/2;
+        float distance = 5 + power * GameController.instance.firlatmaForce;
         float time = 0;
         float aci = 0;
         Vector3 pos = transform.position;
         while (time < 1 && !isStatus1)
 		{
-            yield return new WaitForSeconds(.02f);
+            yield return new WaitForSeconds(.01f);
             if (tempY > transform.position.y) canTap = true;
 			tempY = transform.position.y;
-            time += 1 / (distance*5);
+            time += 1 / (distance*50);
             if(aci < 180) aci = 180 *time;
-            pos.y += Mathf.Cos(Mathf.Deg2Rad * aci)/(100/power);
-            pos.z += .5f;
+            if (power < 10) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (100 / power);
+            else if (power < 20) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (200 / power);
+            else if (power < 30) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (350 / power);
+            else if (power < 50) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (500 / power);
+            else if (power < 70) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (700 / power);
+            else if (power < 100) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1000 / power);
+            else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
+            else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
+            pos.z += .2f;
             transform.position = pos;        
+            //transform.position = new Vector3(pos.x,pos.y +5,pos.z);        
         }
         if (!isStatus1)
         {
@@ -119,20 +128,28 @@ public class PlayerController : MonoBehaviour
         StopCoroutine(ThrowPlayer());
         StartCoroutine(CalculateCoins2());
         float power = GameController.instance.power + GameController.instance.height;
-        float distance = 10 + power/3;
+        float distance = 3 + power / GameController.instance.firlatmaAzaltma1;
         float time = 0;
         float aci = 0;
         Vector3 pos = transform.position;
         while (time < 1 && !isStatus2)
         {
-            yield return new WaitForSeconds(.02f);
+            yield return new WaitForSeconds(.01f);
             if (tempY > transform.position.y) canTap = true;
             tempY = transform.position.y;
-            time += 1 / (distance * 5);
+            time += 1 / (distance * 50);
             if (aci < 180) aci = 180 * time;
-            pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (100 / power);
-            pos.z += .5f;
+            if (power < 10) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (100 / power);
+            else if (power < 20) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (200 / power);
+            else if (power < 30) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (350 / power);
+            else if (power < 50) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (500 / power);
+            else if (power < 70) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (700 / power);
+            else if (power < 100) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1000 / power);
+            else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
+            else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
+            pos.z += .2f;
             transform.position = pos;
+            
         }
         if (!isStatus2)
         {
@@ -149,20 +166,28 @@ public class PlayerController : MonoBehaviour
         StopCoroutine(Tap1());
         StartCoroutine(CalculateCoins3());
         float power = GameController.instance.power + GameController.instance.height;
-        float distance = 10 + power/4;
+        float distance = 1 + power / GameController.instance.firlatmaAzaltma2;
         float time = 0;
         float aci = 0;
         Vector3 pos = transform.position;
         while (time < 1 )
         {
-            yield return new WaitForSeconds(.02f);
+            yield return new WaitForSeconds(.01f);
             if (tempY > transform.position.y) canTap = true;
             tempY = transform.position.y;
-            time += 1 / (distance * 5);
+            time += 1 / (distance * 50);
             if (aci < 180) aci = 180 * time;
-            pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (100 / power);
-            pos.z += .5f;
-            transform.position = pos;      
+            if (power < 10) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (100 / power);
+            else if (power < 20) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (200 / power);
+            else if (power < 30) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (350 / power);
+            else if (power < 50) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (500 / power);
+            else if (power < 70) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (700 / power);
+            else if (power < 100) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1000 / power);
+            else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
+            else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
+            pos.z += .2f;
+            transform.position = pos;
+           
         }
         canTap = false;
         OpenRagDolsRb();
@@ -173,74 +198,102 @@ public class PlayerController : MonoBehaviour
     public IEnumerator CalculateCoins()
     {
         float power = GameController.instance.power + GameController.instance.height;
-        float distance = 10 + power / 2;
+        float distance = 5 + power * GameController.instance.firlatmaForce ;
         float time = 0;
         float aci = 0;
-        Vector3 pos = engel.transform.position;
+        Vector3 pos = hips.transform.position; 
         while (time < 1 )
         {
-            time += 1 / (distance * 5);
+            time += 1 / (distance * 50);
             if (aci < 180) aci = 180 * time;
-            pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (100 / power);
-            pos.z += .5f;
-            int rnd = Random.Range(0, 10);
+            if (power < 10) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (100 / power);
+            else if (power < 20) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (200 / power);
+            else if (power < 30) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (350 / power);
+            else if (power < 50) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (500 / power);
+            else if (power < 70) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (700 / power);
+            else if (power < 100) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1000 / power);
+            else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
+            else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
+            pos.z += .2f;
+            int rnd = Random.Range(0, 20);
             if (rnd == 0)
             {
-                GameObject coin = Instantiate(coinPrefab, pos, Quaternion.identity);
+                GameObject coin = Instantiate(coinPrefab,pos, Quaternion.identity);
                 coin.transform.tag = "para";
             }
-            yield return new WaitForEndOfFrame();
         }
+        yield return new WaitForSeconds(.001f);
     }
 
     public IEnumerator CalculateCoins2()
     {
         float power = GameController.instance.power + GameController.instance.height;
-        float distance = 10 + power / 3;
+        float distance = 3 + power / GameController.instance.firlatmaAzaltma1 ;
         float time = 0;
         float aci = 0;
-        Vector3 pos = transform.position;
+        Vector3 pos = hips.transform.position;
         while (time < 1)
         {
-            time += 1 / (distance * 5);
+            time += 1 / (distance * 50);
             aci = 180 * time;
-            pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (100 / power);
-            pos.z += .5f;
-            int rnd = Random.Range(0, 10);
+            if (power < 10) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (100 / power);
+            else if (power < 20) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (200 / power);
+            else if (power < 30) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (350 / power);
+            else if (power < 50) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (500 / power);
+            else if (power < 70) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (700 / power);
+            else if (power < 100) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1000 / power);
+            else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
+            else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
+            pos.z += .2f;
+            int rnd = Random.Range(0, 20);
             if (rnd == 0)
             {
                 GameObject coin = Instantiate(coinPrefab, pos, Quaternion.identity);
                 coin.transform.tag = "para";
             }
-            yield return new WaitForEndOfFrame();
+          
         }
+        yield return new WaitForSeconds(.001f);
     }
 
     public IEnumerator CalculateCoins3()
     {
         float power = GameController.instance.power + GameController.instance.height;
-        float distance = 10 + power / 4;
+        float distance = 1 + power / GameController.instance.firlatmaAzaltma2;
         float time = 0;
         float aci = 0;
-        Vector3 pos = transform.position;
+        Vector3 pos = hips.transform.position;
         while (time < 1)
         {
-            time += 1 / (distance * 5);
+            time += 1 / (distance * 50);
             aci = 180 * time;
-            pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (100 / power);
-            pos.z += .5f;
-            int rnd = Random.Range(0, 10);
+            if (power < 10) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (100 / power);
+            else if (power < 20) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (200 / power);
+            else if (power < 30) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (350 / power);
+            else if (power < 50) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (500 / power);
+            else if (power < 70) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (700 / power);
+            else if (power < 100) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1000 / power);
+            else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
+            else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
+            pos.z += .2f;
+            int rnd = Random.Range(0, 20);
             if (rnd == 0)
             {
                 GameObject coin = Instantiate(coinPrefab, pos, Quaternion.identity);
                 coin.transform.tag = "para";
             }
-            yield return new WaitForEndOfFrame();
+            
         }
+        yield return new WaitForSeconds(.001f);
     }
+    
+
 
     void OpenRagDolsRb()
 	{
+        hips.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+        hips.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePositionX;
+        
         foreach(Rigidbody rb in ragDollsRb)
 		{
             rb.useGravity = true;
@@ -249,6 +302,7 @@ public class PlayerController : MonoBehaviour
 
     void CloseRagDolsRb()
     {
+        hips.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
         foreach (Rigidbody rb in ragDollsRb)
         {
             rb.useGravity = false;

@@ -6,7 +6,17 @@ public class GameController : MonoBehaviour
 {
     public static GameController instance; // singleton yapisi icin gerekli ornek ayrintilar icin BeniOku 22. satirdan itibaren bak.
     [HideInInspector] public bool isContinue;  // ayrintilar icin beni oku 19. satirdan itibaren bak
-    public int power, height;
+    [Header("Arac gucu - Power")]
+    public int power;
+    [Header("Rampa Yüksekligi - Height")]
+    public int height;
+    [Header("Ilk Firlatma Azaltma Katsayýsý")]
+    public float firlatmaForce = 1;
+    [Header("Ikinci Firlatma Azaltma Katsayýsý")]
+    public float firlatmaAzaltma1 = 2;
+    [Header("Ucuncu Firlatma Azaltma Katsayýsý")]
+    public float firlatmaAzaltma2 = 4;
+    [Header("Diger Degiskenler")]
     public GameObject heightPlatform;
     public Transform carTarget;
     [HideInInspector] public int para;
@@ -20,17 +30,15 @@ public class GameController : MonoBehaviour
 
 	void Start()
     {
-        PlayerPrefs.DeleteAll();
+       // PlayerPrefs.DeleteAll();
         para = 250000;
-        power = 1;
-        height = 1;
         PlayerPrefs.SetInt("para", para);
         PlayerPrefs.SetInt("power", power);
         PlayerPrefs.SetInt("height", height);
 
-        power = PlayerPrefs.GetInt("power");
-        height = PlayerPrefs.GetInt("height");
-        para = PlayerPrefs.GetInt("para");
+        //power = PlayerPrefs.GetInt("power");
+        //height = PlayerPrefs.GetInt("height");
+        //para = PlayerPrefs.GetInt("para");
         //power = 15;
         //height = 15;
         isContinue = false;

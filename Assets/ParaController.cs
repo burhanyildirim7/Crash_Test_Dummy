@@ -9,7 +9,6 @@ public class ParaController : MonoBehaviour
 	{
 		if (other.CompareTag("para"))
 		{
-			Debug.Log("çarptýkkk.");
 			Destroy(other.gameObject);
 			GameController.instance.para++;
 			PlayerPrefs.SetInt("para", GameController.instance.para);

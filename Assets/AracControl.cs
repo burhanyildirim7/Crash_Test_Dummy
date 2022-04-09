@@ -27,21 +27,28 @@ public class AracControl : MonoBehaviour
     public IEnumerator DelayAndActivateCar()
 	{
         yield return new WaitForSeconds(1f);
-        rb.useGravity = true;   
+        rb.useGravity = true;
+        StartCoroutine(IncreaseVelocity());
 	}
 
     public IEnumerator IncreaseVelocity()
     {
-        yield return new WaitForSeconds(.1f);
-        rb.velocity = Vector3.forward * 5;
-        float velocitySpeed = 5;
-        while (transform.childCount > 0)
-        {
-            velocitySpeed += .4f;
-            rb.velocity = Vector3.forward * 5;
-            yield return new WaitForSeconds(.1f);
-        }
-    }
+        yield return new WaitForSeconds(.001f);
+        //rb.velocity = Vector3.forward * 5;
+        float velocitySpeed = GameController.instance.power;
+		//rb.velocity = transform.forward * velocitySpeed;
+		while (transform.childCount > 1)
+		{
+			velocitySpeed += 50f;
+			//rb.velocity = transform.forward * velocitySpeed;
+			rb.AddForce(transform.forward * velocitySpeed);
+			yield return new WaitForSeconds(.01f);
+		}
+        rb.velocity = Vector3.zero;
+        rb.AddForce(Vector3.zero);
+        rb.constraints = RigidbodyConstraints.FreezePosition;
+
+	}
 
     private void OnTriggerEnter(Collider other)
 	{
