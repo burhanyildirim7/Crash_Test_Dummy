@@ -47,6 +47,7 @@ public class UIController : MonoBehaviour
     // TAPTOSTART TUSUNA BASILDISINDA  --- GIRIS EKRANINDA VE LEVEL BASLARINDA
     public void TapToStartButtonClick()
     {
+        ZeminController.instance.collisionCount = 0;
         StartCoroutine(AracControl.instance.DelayAndActivateCar());
         GameController.instance.isContinue = true;
         TapToStartPanel.SetActive(false);
@@ -229,7 +230,7 @@ public class UIController : MonoBehaviour
     public void SetPowerAndLevelText()
 	{
         powerLevelText.text = "Level " + PlayerPrefs.GetInt("power").ToString();
-        heightLevelText.text = "Level " + PlayerPrefs.GetInt("level").ToString();
+        heightLevelText.text = "Level " + PlayerPrefs.GetInt("height").ToString();
         powerCostText.text = (20 * GameController.instance.power).ToString();
         heightCostText.text = (20 * GameController.instance.height).ToString();
         SetParaText();

@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-    public static PlayerController instance;
+    
     public int collectibleDegeri;
     public bool xVarMi = true;
     public bool collectibleVarMi = true;
@@ -18,8 +18,11 @@ public class PlayerController : MonoBehaviour
     float tempY;
     public Animator playerAnimator;
     public List<Rigidbody> ragDollsRb = new();
+    public GameObject cameraLookAtTarget,hips;
+    private bool isForceTime;
+    float lastForce = 2000;
 
-
+    public static PlayerController instance;
     private void Awake()
     {
         if (instance == null) instance = this;
@@ -35,7 +38,7 @@ public class PlayerController : MonoBehaviour
 	private void Update()
 	{
 
-
+        cameraLookAtTarget.transform.position = new(0,hips.transform.position.y,hips.transform.position.z+2);
 		if (Input.GetMouseButtonDown(0) && canTap)
 		{
 			if (status == 0)
@@ -55,11 +58,20 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
+	private void FixedUpdate()
+	{
+		if (isForceTime)
+		{
+            foreach (Rigidbody rb in ragDollsRb) rb.AddForce(Vector3.forward * lastForce);
+            lastForce -= 50f;
+            if (lastForce <= 0) isForceTime = false;
+        }
+	}
 
-    /// <summary>
-    /// Bu fonksiyon her level baslarken cagrilir. 
-    /// </summary>
-    public void StartingEvents()
+	/// <summary>
+	/// Bu fonksiyon her level baslarken cagrilir. 
+	/// </summary>
+	public void StartingEvents()
     {
 
         //transform.parent.transform.rotation = Quaternion.Euler(0, 0, 0);
@@ -83,17 +95,22 @@ public class PlayerController : MonoBehaviour
         Vector3 pos = transform.position;
         while (time < 1 && !isStatus1)
 		{
+            yield return new WaitForSeconds(.02f);
             if (tempY > transform.position.y) canTap = true;
 			tempY = transform.position.y;
             time += 1 / (distance*5);
             if(aci < 180) aci = 180 *time;
             pos.y += Mathf.Cos(Mathf.Deg2Rad * aci)/(100/power);
             pos.z += .5f;
-            transform.position = pos;
-            yield return new WaitForSeconds(.015f);
+            transform.position = pos;        
         }
-        OpenRagDolsRb();
-        canTap = false;
+        if (!isStatus1)
+        {
+            canTap = false;
+            OpenRagDolsRb();
+            isForceTime = true;       
+        }
+       
     }
 
     public IEnumerator Tap1()
@@ -108,6 +125,7 @@ public class PlayerController : MonoBehaviour
         Vector3 pos = transform.position;
         while (time < 1 && !isStatus2)
         {
+            yield return new WaitForSeconds(.02f);
             if (tempY > transform.position.y) canTap = true;
             tempY = transform.position.y;
             time += 1 / (distance * 5);
@@ -115,10 +133,14 @@ public class PlayerController : MonoBehaviour
             pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (100 / power);
             pos.z += .5f;
             transform.position = pos;
-            yield return new WaitForSeconds(.015f);
         }
-        OpenRagDolsRb();
-        canTap = false;
+        if (!isStatus2)
+        {
+            canTap = false;
+            OpenRagDolsRb();
+            isForceTime = true;
+
+        }
     }
 
     public IEnumerator Tap2()
@@ -133,17 +155,19 @@ public class PlayerController : MonoBehaviour
         Vector3 pos = transform.position;
         while (time < 1 )
         {
+            yield return new WaitForSeconds(.02f);
             if (tempY > transform.position.y) canTap = true;
             tempY = transform.position.y;
             time += 1 / (distance * 5);
             if (aci < 180) aci = 180 * time;
             pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (100 / power);
             pos.z += .5f;
-            transform.position = pos;
-            yield return new WaitForSeconds(.015f);
+            transform.position = pos;      
         }
-        OpenRagDolsRb();
         canTap = false;
+        OpenRagDolsRb();
+        isForceTime = true;
+
     }
 
     public IEnumerator CalculateCoins()
@@ -159,7 +183,7 @@ public class PlayerController : MonoBehaviour
             if (aci < 180) aci = 180 * time;
             pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (100 / power);
             pos.z += .5f;
-            int rnd = Random.Range(0, 15);
+            int rnd = Random.Range(0, 10);
             if (rnd == 0)
             {
                 GameObject coin = Instantiate(coinPrefab, pos, Quaternion.identity);
@@ -179,10 +203,10 @@ public class PlayerController : MonoBehaviour
         while (time < 1)
         {
             time += 1 / (distance * 5);
-            if (aci < 180) aci = 180 * time;
+            aci = 180 * time;
             pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (100 / power);
             pos.z += .5f;
-            int rnd = Random.Range(0, 15);
+            int rnd = Random.Range(0, 10);
             if (rnd == 0)
             {
                 GameObject coin = Instantiate(coinPrefab, pos, Quaternion.identity);
@@ -202,10 +226,10 @@ public class PlayerController : MonoBehaviour
         while (time < 1)
         {
             time += 1 / (distance * 5);
-            if (aci < 180) aci = 180 * time;
+            aci = 180 * time;
             pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (100 / power);
             pos.z += .5f;
-            int rnd = Random.Range(0, 15);
+            int rnd = Random.Range(0, 10);
             if (rnd == 0)
             {
                 GameObject coin = Instantiate(coinPrefab, pos, Quaternion.identity);

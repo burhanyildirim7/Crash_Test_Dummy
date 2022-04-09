@@ -8,6 +8,8 @@ public class AracControl : MonoBehaviour
 
     [HideInInspector]public Rigidbody rb;
 
+    public List<GameObject> Explossions = new();
+
 	private void Awake()
 	{
         if (instance == null) instance = this;
@@ -49,6 +51,7 @@ public class AracControl : MonoBehaviour
             rb.velocity = Vector3.zero;
             PlayerController.instance.transform.parent = null;
             StartCoroutine(PlayerController.instance.ThrowPlayer());
+            Instantiate(Explossions[0], other.transform.position + new Vector3(0,1,1), Quaternion.identity);
             Debug.Log("engel");
 		}
 	}

@@ -11,6 +11,7 @@ TagManager:
   - finish
   - collectible
   - para
+  - ragdolkemik
   layers:
   - Default
   - TransparentFX

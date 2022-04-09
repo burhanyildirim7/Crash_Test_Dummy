@@ -20,11 +20,19 @@ public class GameController : MonoBehaviour
 
 	void Start()
     {
+        PlayerPrefs.DeleteAll();
+        para = 250000;
+        power = 1;
+        height = 1;
+        PlayerPrefs.SetInt("para", para);
+        PlayerPrefs.SetInt("power", power);
+        PlayerPrefs.SetInt("height", height);
+
         power = PlayerPrefs.GetInt("power");
         height = PlayerPrefs.GetInt("height");
         para = PlayerPrefs.GetInt("para");
-        power = 15;
-        height = 15;
+        //power = 15;
+        //height = 15;
         isContinue = false;
         SetHeightPlatform();
         UIController.instance.SetPowerAndLevelText();
@@ -34,8 +42,9 @@ public class GameController : MonoBehaviour
 	{
         if(para >= 20 * power)
 		{
-            power++;
+            
             para -= 20 * power;
+            power++;
             PlayerPrefs.SetInt("para", para);
             PlayerPrefs.SetInt("power", power);
         }
@@ -46,9 +55,10 @@ public class GameController : MonoBehaviour
 	{
         if (para >= 20 * height)
         {
+           
+            para -= 20 * height;
             height++;
             SetHeightPlatform();
-            para -= 20 * height;
             PlayerPrefs.SetInt("para", para);
             PlayerPrefs.SetInt("height", height);
         }
