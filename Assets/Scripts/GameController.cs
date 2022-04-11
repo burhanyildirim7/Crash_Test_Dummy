@@ -76,8 +76,8 @@ public class GameController : MonoBehaviour
     public void SetHeightPlatform()
 	{
         heightPlatform.transform.position = new Vector3(0, height, 0);
-        AracControl.instance.transform.position = carTarget.position;
-        AracControl.instance.transform.rotation = carTarget.rotation;
+        //AracControl.instance.transform.position = carTarget.position;
+        //AracControl.instance.transform.rotation = carTarget.rotation;
         
     }
 
