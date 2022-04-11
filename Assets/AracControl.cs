@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
 
 public class AracControl : MonoBehaviour
 {
@@ -10,14 +9,9 @@ public class AracControl : MonoBehaviour
     // way point ile movement
     public GameObject[] wayPoints;
     int current = 0;
-    float rotSpeed;
-    public float speed;
     float WPradius = 1;
+    public bool isAracActive = false;
 
-
-    [HideInInspector]public Rigidbody rb;
-    [HideInInspector]public bool canForce;
-    public Transform startingTarget, startingTarget2, startingTarget3;
 
     public List<GameObject> Explossions = new();
 
@@ -28,45 +22,35 @@ public class AracControl : MonoBehaviour
 	}
 	void Start()
     {
-        DOTween.Init();
-        canForce = true;
-        rb = GetComponent<Rigidbody>();
-        rb.useGravity = false;
-        rb.velocity = Vector3.zero;
-        //UpdateDoTweenWayPoints();
+        isAracActive = true;
+        transform.position = wayPoints[0].transform.position;
     }
 
-
-
-    public IEnumerator DelayAndActivateCar()
+	private void Update()
 	{
-        yield return new WaitForSeconds(1f);
-        //rb.useGravity = true;
-        //StartCoroutine(IncreaseVelocity());
-	}
+		if (isAracActive)
+		{
+            if (Vector3.Distance(wayPoints[current].transform.position, transform.position) < WPradius)
+            {
+                current++;
 
-    public IEnumerator IncreaseVelocity()
-    {
-       yield return new WaitForSeconds(.001f);
-  //      float velocitySpeed = GameController.instance.power;
-		//while (canForce)
-		//{
-		//	velocitySpeed += 50f;
-		//	rb.AddForce(transform.forward * velocitySpeed);
-		//	yield return new WaitForSeconds(.01f);
-		//}      
-	}
+                if (current >= wayPoints.Length)
+                {
+                    current = 0;
+                }
+            }
+            transform.position = Vector3.MoveTowards(transform.position, wayPoints[current].transform.position, Time.deltaTime * GameController.instance.aracSpeed);
+            Vector3 relativePos = wayPoints[current].transform.position - transform.position;
+            Quaternion toRotation = Quaternion.LookRotation(relativePos);
+            transform.rotation = Quaternion.Lerp(transform.rotation, toRotation, GameController.instance.aracrRotSpeed * Time.deltaTime);
+        }
+    }
 
     private void OnTriggerEnter(Collider other)
 	{
 		if (other.CompareTag("engel"))
 		{
-            
-            canForce = false;
-            rb.velocity = Vector3.zero;
-            rb.AddForce(Vector3.zero);
-            rb.constraints = RigidbodyConstraints.FreezePosition;
-            StopCoroutine(IncreaseVelocity());
+            isAracActive = false;
             other.GetComponent<Collider>().enabled = false;
             PlayerController.instance.transform.parent = null;
             StartCoroutine(PlayerController.instance.ThrowPlayer());
@@ -75,11 +59,5 @@ public class AracControl : MonoBehaviour
 		}
 	}
 
- //   public void UpdateDoTweenWayPoints()
-	//{
- //       GetComponent<DOTweenPath>().path.wps[2] = startingTarget2.transform.position;
- //       GetComponent<DOTweenPath>().path.wps[1] = startingTarget.transform.position;
- //       GetComponent<DOTweenPath>().path.wps[3] = startingTarget3.transform.position;
- //       Debug.Log(GetComponent<DOTweenPath>().path.wps.Length);
- //   }
+
 }

@@ -16,6 +16,9 @@ public class GameController : MonoBehaviour
     public float firlatmaAzaltma1 = 2;
     [Header("Ucuncu Firlatma Azaltma Katsayýsý")]
     public float firlatmaAzaltma2 = 4;
+    [Header("Arabanýn doðrusal ve dairesel hýzý")]
+    public float aracSpeed;
+    public float aracrRotSpeed;
     [Header("Diger Degiskenler")]
     public GameObject heightPlatform;
     public Transform carTarget;

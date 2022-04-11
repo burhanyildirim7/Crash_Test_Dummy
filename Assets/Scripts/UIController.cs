@@ -48,7 +48,6 @@ public class UIController : MonoBehaviour
     public void TapToStartButtonClick()
     {
         ZeminController.instance.collisionCount = 0;
-        StartCoroutine(AracControl.instance.DelayAndActivateCar());
         GameController.instance.isContinue = true;
         TapToStartPanel.SetActive(false);
     }

@@ -38,8 +38,8 @@ public class PlayerController : MonoBehaviour
 	private void Update()
 	{
 
-        cameraLookAtTarget.transform.position = new(0,hips.transform.position.y,hips.transform.position.z+2);
-		if (Input.GetMouseButtonDown(0) && canTap)
+        
+        if (Input.GetMouseButtonDown(0) && canTap)
 		{
 			if (status == 0)
 			{
@@ -58,6 +58,7 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
+
 	private void FixedUpdate()
 	{
 		if (isForceTime)
@@ -65,8 +66,13 @@ public class PlayerController : MonoBehaviour
             foreach (Rigidbody rb in ragDollsRb) rb.AddForce(Vector3.forward * lastForce);
             lastForce -= 50f;
             if (lastForce <= 0) isForceTime = false;
-        }
-	}
+        }     
+    }
+
+	private void LateUpdate()
+	{
+        cameraLookAtTarget.transform.position = new(0, hips.transform.position.y, hips.transform.position.z + 2);
+    }
 
 	/// <summary>
 	/// Bu fonksiyon her level baslarken cagrilir. 
@@ -215,8 +221,8 @@ public class PlayerController : MonoBehaviour
             else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
             else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
             pos.z += .2f;
-            int rnd = Random.Range(0, 20);
-            if (rnd == 0)
+            int rnd = Random.Range(0, 150);
+            if (rnd < 3)
             {
                 GameObject coin = Instantiate(coinPrefab,pos, Quaternion.identity);
                 coin.transform.tag = "para";
@@ -245,8 +251,8 @@ public class PlayerController : MonoBehaviour
             else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
             else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
             pos.z += .2f;
-            int rnd = Random.Range(0, 20);
-            if (rnd == 0)
+            int rnd = Random.Range(0, 150);
+            if (rnd < 3)
             {
                 GameObject coin = Instantiate(coinPrefab, pos, Quaternion.identity);
                 coin.transform.tag = "para";
@@ -276,8 +282,8 @@ public class PlayerController : MonoBehaviour
             else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
             else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
             pos.z += .2f;
-            int rnd = Random.Range(0, 20);
-            if (rnd == 0)
+            int rnd = Random.Range(0, 150);
+            if (rnd < 3)
             {
                 GameObject coin = Instantiate(coinPrefab, pos, Quaternion.identity);
                 coin.transform.tag = "para";
