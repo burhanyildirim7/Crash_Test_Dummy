@@ -12,6 +12,7 @@ TagManager:
   - collectible
   - para
   - ragdolkemik
+  - kus
   layers:
   - Default
   - TransparentFX

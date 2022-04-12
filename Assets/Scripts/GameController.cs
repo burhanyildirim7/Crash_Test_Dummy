@@ -117,4 +117,10 @@ public class GameController : MonoBehaviour
     }
 
 
+    public void SetAracSpeedAndRotate()
+	{
+        int level = power + height;
+        aracSpeed = aracrRotSpeed = 7 + level * .2f;
+	}
+
 }
