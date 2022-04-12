@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour
     public GameObject cameraLookAtTarget,hips;
     private bool isForceTime;
     float lastForce = 2000;
+    public GameObject paralarParenti;
 
     public static PlayerController instance;
     private void Awake()
@@ -226,6 +227,7 @@ public class PlayerController : MonoBehaviour
             {
                 GameObject coin = Instantiate(coinPrefab,pos, Quaternion.identity);
                 coin.transform.tag = "para";
+                coin.transform.parent = paralarParenti.transform;
             }
         }
         yield return new WaitForSeconds(.001f);
@@ -256,6 +258,7 @@ public class PlayerController : MonoBehaviour
             {
                 GameObject coin = Instantiate(coinPrefab, pos, Quaternion.identity);
                 coin.transform.tag = "para";
+                coin.transform.parent = paralarParenti.transform;
             }
           
         }
@@ -287,11 +290,17 @@ public class PlayerController : MonoBehaviour
             {
                 GameObject coin = Instantiate(coinPrefab, pos, Quaternion.identity);
                 coin.transform.tag = "para";
+                coin.transform.parent = paralarParenti.transform;
             }
             
         }
         yield return new WaitForSeconds(.001f);
     }
+
+    public void ClearParalarParenti()
+	{
+		while (paralarParenti.transform.childCount > 0) { Destroy(paralarParenti.transform.GetChild(0).gameObject); }
+	}
     
 
 
@@ -299,7 +308,7 @@ public class PlayerController : MonoBehaviour
 	{
         hips.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
         hips.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePositionX;
-        
+        ClearParalarParenti();
         foreach(Rigidbody rb in ragDollsRb)
 		{
             rb.useGravity = true;
