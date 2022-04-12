@@ -49,6 +49,7 @@ public class UIController : MonoBehaviour
     {
         ZeminController.instance.collisionCount = 0;
         GameController.instance.isContinue = true;
+        AracControl.instance.isAracActive = true;
         TapToStartPanel.SetActive(false);
     }
 

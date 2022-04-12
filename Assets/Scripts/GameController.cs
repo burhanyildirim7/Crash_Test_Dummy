@@ -24,6 +24,8 @@ public class GameController : MonoBehaviour
     public Transform carTarget;
     [HideInInspector] public int para;
     public List<GameObject> vehicles = new();
+    public Animator DummyAnim;
+    public int type;
 
 	private void Awake()
 	{
@@ -47,6 +49,7 @@ public class GameController : MonoBehaviour
         isContinue = false;
         SetHeightPlatform();
         UIController.instance.SetPowerAndLevelText();
+        SetVehicleType();
     }
 
     public void IncreasePower()
@@ -86,13 +89,32 @@ public class GameController : MonoBehaviour
 
     public void SetVehicleType()
 	{
-        int type = (int) power / 5;
+        type = (int) power / 4;
         foreach(GameObject vehicle in vehicles)
 		{
             vehicle.SetActive(false);
 		}
+        if (power > 92) type = 23; 
         vehicles[type].SetActive(true);
-	}
+
+        if (type > 3 && type < 8) 
+        { 
+            DummyAnim.SetTrigger("keko");
+        }
+        else if (type >= 8) DummyAnim.SetTrigger("koltuk");
+
+        if (type == 4) PlayerController.instance.transform.localPosition = Vector3.zero;
+        else if (type > 4 && type <= 7) PlayerController.instance.transform.localPosition = new Vector3(0, -1, 0);
+        else if(type == 8) PlayerController.instance.transform.localPosition = new Vector3(-0.27f, 0, -0.66f);
+        else if(type > 8 && type <= 11) PlayerController.instance.transform.localPosition = new Vector3(-0.56f, 1, -0.66f);
+        else if(type == 12 ) PlayerController.instance.transform.localPosition = new Vector3(-0.37f, -0.14f, -0.28f);
+        else if(type > 12 && type <= 15 ) PlayerController.instance.transform.localPosition = new Vector3(-0.5f, 0.43f, -0.46f);
+        else if(type == 16 ) PlayerController.instance.transform.localPosition = new Vector3(-0.7f, -0.37f, -0.67f);
+        else if(type > 16 && type <= 19) PlayerController.instance.transform.localPosition = new Vector3(-0.85f, 0.59f, -0.58f);
+        else if(type == 20) PlayerController.instance.transform.localPosition = new Vector3(-0.5f, -0.62f, -0.37f);
+        else if(type > 20) PlayerController.instance.transform.localPosition = new Vector3(-0.6f, -0.17f, -0.1f);
+        Debug.Log(type);
+    }
 
 
 }

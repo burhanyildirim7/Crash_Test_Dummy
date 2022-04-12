@@ -11,6 +11,7 @@ public class AracControl : MonoBehaviour
     int current = 0;
     float WPradius = 1;
     public bool isAracActive = false;
+    public GameObject kirikCamlarPrefab;
 
 
     public List<GameObject> Explossions = new();
@@ -22,7 +23,7 @@ public class AracControl : MonoBehaviour
 	}
 	void Start()
     {
-        isAracActive = true;
+       // isAracActive = true;
         transform.position = wayPoints[0].transform.position;
     }
 
@@ -56,7 +57,24 @@ public class AracControl : MonoBehaviour
             StartCoroutine(PlayerController.instance.ThrowPlayer());
             Instantiate(Explossions[0], other.transform.position + new Vector3(0,1,1), Quaternion.identity);
             Debug.Log("engel");
+			if (GameController.instance.type >= 8)
+			{
+                GameObject kirikCamlar = Instantiate(kirikCamlarPrefab, PlayerController.instance.hips.transform.position, Quaternion.identity);
+                for (int i = 0; i < kirikCamlar.transform.childCount; i++)
+                {
+                    Vector3 forcePower = new(Random.Range(-10, 10), Random.Range(0, 20), Random.Range(10, 30));
+                    kirikCamlar.transform.GetChild(i).GetComponent<Rigidbody>().AddForce(forcePower * 100);
+                }
+                DestroyMe(kirikCamlar);
+            }
+            
 		}
+	}
+
+    public IEnumerator DestroyMe(GameObject obj)
+	{
+        yield return new WaitForSeconds(3f);
+        Destroy(obj);
 	}
 
 
