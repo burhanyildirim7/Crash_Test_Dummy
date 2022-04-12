@@ -13,6 +13,7 @@ TagManager:
   - para
   - ragdolkemik
   - kus
+  - zemin
   layers:
   - Default
   - TransparentFX

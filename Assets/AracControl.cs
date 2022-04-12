@@ -8,7 +8,7 @@ public class AracControl : MonoBehaviour
 
     // way point ile movement
     public GameObject[] wayPoints;
-    int current = 0;
+    public int current = 0;
     float WPradius = 1;
     public bool isAracActive = false;
     public GameObject kirikCamlarPrefab;

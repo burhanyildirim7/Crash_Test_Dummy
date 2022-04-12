@@ -12,7 +12,7 @@ public class UIController : MonoBehaviour
     public Text gamePlayScoreText, winScreenScoreText, levelNoText, tapToStartScoreText, totalElmasText;
     public Animator ScoreTextAnim;
     public TextMeshProUGUI heightLevelText, powerLevelText, heightCostText, powerCostText;
-    public Text paraText;
+    public Text paraText,bestDistanceText;
 
 
 
@@ -26,6 +26,7 @@ public class UIController : MonoBehaviour
     private void Start()
     {
         // StartUI();
+        bestDistanceText.text = " ";
         SetPowerAndLevelText();
     }
 
@@ -48,10 +49,9 @@ public class UIController : MonoBehaviour
     public void TapToStartButtonClick()
     {
         ZeminController.instance.collisionCount = 0;
-        GameController.instance.isContinue = true;
         AracControl.instance.isAracActive = true;
-        GameController.instance.SetAracSpeedAndRotate();
         TapToStartPanel.SetActive(false);
+        GameController.instance.PreStartingEvents();
     }
 
     // RESTART TUSUNA BASILDISINDA  --- LOOSE EKRANINDA
@@ -72,8 +72,9 @@ public class UIController : MonoBehaviour
         TapToStartPanel.SetActive(true);
         WinPanel.SetActive(false);
         GamePanel.SetActive(false);
-        LevelController.instance.NextLevelEvents();
         StartCoroutine(StartScreenCoinEffect());
+        PlayerController.instance.StartingEvents();
+        GameController.instance.SetHeightPlatform();
     }
 
 
@@ -91,7 +92,7 @@ public class UIController : MonoBehaviour
     /// </summary>
     public void SetTapToStartScoreText()
     {
-        tapToStartScoreText.text = PlayerPrefs.GetInt("totalScore").ToString();
+        //tapToStartScoreText.text = PlayerPrefs.GetInt("totalScore").ToString();
     }
 
     /// <summary>
@@ -121,10 +122,11 @@ public class UIController : MonoBehaviour
 
     IEnumerator WinScreenDelay()
     {
+        yield return new WaitForSeconds(6f);
         WinPanel.SetActive(true);
         winScreenScoreText.text = "0";
         int sayac = 0;
-        while (sayac < GameController.instance.para)
+        while (sayac < GameController.instance.levelPara)
         {
             sayac += PlayerController.instance.collectibleDegeri;
             if (sayac % 2 * PlayerController.instance.collectibleDegeri == 0)
@@ -177,7 +179,7 @@ public class UIController : MonoBehaviour
             }
         }
         Instantiate(scoreEffect, new Vector3(1.34f, 5.43F, -1.15F), Quaternion.identity);
-        ScoreTextAnim.SetTrigger("score");
+        //ScoreTextAnim.SetTrigger("score");
         startScreenCoinImage.SetActive(false);
         startScreenCoinImage.transform.localPosition = new Vector3(0, -446, 0);
     }

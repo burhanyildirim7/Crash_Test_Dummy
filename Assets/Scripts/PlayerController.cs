@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.UI;
-
+using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
-    
+    public TextMeshPro distanceText;
+    [SerializeField] float bestDistance;
+    public bool distanceTextTime;
     public int collectibleDegeri;
     public bool xVarMi = true;
     public bool collectibleVarMi = true;
@@ -22,6 +24,7 @@ public class PlayerController : MonoBehaviour
     private bool isForceTime;
     float lastForce = 2000;
     public GameObject paralarParenti,birdPrefab,onBoarding;
+    public GameObject arac;
 
     public static PlayerController instance;
     private void Awake()
@@ -33,13 +36,16 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         StartingEvents();
-       
+        bestDistance = PlayerPrefs.GetFloat("distance");
     }
 
 	private void Update()
 	{
 
-        
+		if (distanceTextTime)
+		{
+            CalculateDistance();
+		}
         if (Input.GetMouseButtonDown(0) && canTap)
 		{
 			if (status == 0)
@@ -82,15 +88,34 @@ public class PlayerController : MonoBehaviour
 	/// </summary>
 	public void StartingEvents()
     {
-
-        //transform.parent.transform.rotation = Quaternion.Euler(0, 0, 0);
-        //transform.parent.transform.position = Vector3.zero;
-        //GameController.instance.isContinue = false;
-        //GameController.instance.score = 0;
-        //transform.position = new Vector3(0, transform.position.y, 0);
-        //GetComponent<Collider>().enabled = true;
-
+        UIController.instance.bestDistanceText.text = "";
+        distanceTextTime = false;
+        playerAnimator.enabled = true;
+        Debug.Log("çaðrýldý");
+        transform.parent = arac.transform;
+        GameController.instance.SetAracSpeedAndRotate();
+        GameController.instance.SetVehicleType();
+        engel.GetComponent<Collider>().enabled = true;
+        AracControl.instance.current = 0;
+        status = 0;
+        isStatus1 = isStatus2 = false;
+        CloseRagDolsRb();
+        onBoarding.SetActive(false);
     }
+
+    public void CalculateDistance()
+	{
+        float distance = hips.transform.position.z - engel.transform.position.z;
+        distanceText.text = distance.ToString("#.00");
+        if(distance > bestDistance)
+		{
+            bestDistance = distance;
+            PlayerPrefs.SetFloat("distance", distance);
+            UIController.instance.bestDistanceText.text = "Best Distance : " + distance.ToString("#.00");
+		}
+        distanceText.gameObject.transform.position = hips.transform.position + new Vector3(2.5f,0,0); 
+        
+	}
 
 
 
@@ -371,4 +396,6 @@ public class PlayerController : MonoBehaviour
             rb.useGravity = false;
         }
     }
+
+
 }

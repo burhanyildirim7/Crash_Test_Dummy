@@ -22,12 +22,14 @@ public class GameController : MonoBehaviour
     [Header("Diger Degiskenler")]
     public GameObject heightPlatform;
     public Transform carTarget;
-    [HideInInspector] public int para;
+    [HideInInspector] public int para,levelPara;
     public List<GameObject> vehicles = new();
     public Animator DummyAnim;
     public int type;
+    [HideInInspector]public bool firstCrash;
+    public GameObject zeminTarget;
 
-	private void Awake()
+    private void Awake()
 	{
         if (instance == null) instance = this;
         else Destroy(this);
@@ -81,11 +83,13 @@ public class GameController : MonoBehaviour
 
     public void SetHeightPlatform()
 	{
-        heightPlatform.transform.position = new Vector3(0, height, 0);
-        //AracControl.instance.transform.position = carTarget.position;
-        //AracControl.instance.transform.rotation = carTarget.rotation;
-        
+        heightPlatform.transform.position = new Vector3(0, 2 + (float)height/4, 0);
+        zeminTarget.transform.position = new Vector3(0,.5f,5.5f+((float)height /10));
+        AracControl.instance.transform.position = carTarget.position;
+        AracControl.instance.transform.rotation = carTarget.rotation;
+        Debug.Log("bu daa");      
     }
+
 
     public void SetVehicleType()
 	{
@@ -122,5 +126,14 @@ public class GameController : MonoBehaviour
         int level = power + height;
         aracSpeed = aracrRotSpeed = 7 + level * .2f;
 	}
+
+    public void PreStartingEvents()
+	{
+        firstCrash = true;
+        isContinue = true;
+        levelPara = 0;
+        SetHeightPlatform();
+        SetAracSpeedAndRotate();
+    }
 
 }
