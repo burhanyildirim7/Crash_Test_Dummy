@@ -8,6 +8,7 @@ using TMPro;
 public class PlayerController : MonoBehaviour
 {
     public TextMeshPro distanceText;
+    public Text distanceUiText;
     [SerializeField] float bestDistance;
     public bool distanceTextTime;
     public int collectibleDegeri;
@@ -22,7 +23,7 @@ public class PlayerController : MonoBehaviour
     public List<Rigidbody> ragDollsRb = new();
     public GameObject cameraLookAtTarget,hips;
     private bool isForceTime;
-    float lastForce = 3000;
+    float lastForce = 2000;
     public GameObject paralarParenti,birdPrefab,onBoarding;
     public GameObject arac;
 
@@ -35,13 +36,13 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        PlayerPrefs.SetFloat("distance",100);
         StartingEvents();
-        bestDistance = PlayerPrefs.GetFloat("distance");
+        DistanceTextGroundForStart();
     }
 
 	private void Update()
 	{
-
 		if (distanceTextTime)
 		{
             CalculateDistance();
@@ -55,7 +56,8 @@ public class PlayerController : MonoBehaviour
 				canTap = false;
 				StartCoroutine(Tap1());
                 onBoarding.SetActive(false);
-			}
+                Time.timeScale = 1f;
+            }
 			else if (status == 1)
 			{
 				isStatus2 = true;
@@ -63,6 +65,7 @@ public class PlayerController : MonoBehaviour
 				canTap = false;
 				StartCoroutine(Tap2());
                 onBoarding.SetActive(false);
+                Time.timeScale = 1f;
             }
 		}
 	}
@@ -100,27 +103,52 @@ public class PlayerController : MonoBehaviour
         status = 0;
         isStatus1 = isStatus2 = false;
         CloseRagDolsRb();
+        CloseColliders();
         onBoarding.SetActive(false);
+		tempY = 0;
+        isForceTime = false;
+        lastForce = 2000;
     }
 
-    public void CalculateDistance()
+	public void CalculateDistance()
 	{
         float distance = hips.transform.position.z - engel.transform.position.z;
         distanceText.text = distance.ToString("#.00");
-        if(distance > bestDistance)
+        distanceUiText.text = "Distance : " + distance.ToString("#.00");
+        if (distance > bestDistance)
 		{
             bestDistance = distance;
-            PlayerPrefs.SetFloat("distance", distance);
+            PlayerPrefs.SetFloat("distance", distance + 5);
+            distanceText.gameObject.transform.position = hips.transform.position + new Vector3(2.5f, 0, 0);
             UIController.instance.bestDistanceText.text = "Best Distance : " + distance.ToString("#.00");
-		}
-        distanceText.gameObject.transform.position = hips.transform.position + new Vector3(2.5f,0,0); 
-        
+		}           
 	}
+
+    public void DistanceTextUi()
+	{
+		float distance = hips.transform.position.z - engel.transform.position.z;
+		distanceUiText.text = "Distance : " + distance.ToString("#.00");
+        if(distance > bestDistance)
+		{
+            Debug.Log(distance);
+            bestDistance = distance;
+            PlayerPrefs.SetFloat("distance", distance);
+            distanceText.gameObject.transform.position = new Vector3(.5f,1.15f,bestDistance);
+        }
+	}
+
+    public void DistanceTextGroundForStart()
+	{
+        bestDistance = PlayerPrefs.GetFloat("distance");
+        distanceUiText.text = "Distance : " + bestDistance.ToString("#.00");
+        distanceText.gameObject.transform.position = new Vector3(0.5f,1.15f,bestDistance);
+    }
 
 
 
     public IEnumerator ThrowPlayer()
 	{
+        OpenColliders();
         onBoarding.SetActive(false);
         StartCoroutine(CalculateCoins());
         playerAnimator.enabled = false;
@@ -136,7 +164,10 @@ public class PlayerController : MonoBehaviour
             if (tempY > transform.position.y )
             {
                 canTap = true;
-                onBoarding.SetActive(true);
+                if (power < 4) { 
+                    onBoarding.SetActive(true);
+                    Time.timeScale = .5f;
+                }
             }
             tempY = transform.position.y;
             time += 1 / (distance*50);
@@ -149,23 +180,21 @@ public class PlayerController : MonoBehaviour
             else if (power < 100) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1000 / power);
             else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
             else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
-            pos.z += .2f;
+            pos.z += .4f;
             transform.position = pos;
             if (isStatus1) onBoarding.SetActive(false);
+            DistanceTextUi();
         }
         if (!isStatus1)
         {
             canTap = false;
             OpenRagDolsRb();
-            isForceTime = true;
-            
-        }
-       
+            isForceTime = true;       
+        }    
     }
 
     public IEnumerator Tap1()
-    {
-       
+    {      
         CloseRagDolsRb();
         StopCoroutine(ThrowPlayer());
         StartCoroutine(CalculateCoins2());
@@ -184,7 +213,11 @@ public class PlayerController : MonoBehaviour
             canTap = false;
             if (tempY > transform.position.y ) { 
                 canTap = true;
-                onBoarding.SetActive(true);
+                if (power < 4)
+                {
+                    onBoarding.SetActive(true);
+                    Time.timeScale = .5f;
+                }
             }
             tempY = transform.position.y;
             time += 1 / (distance * 50);
@@ -197,17 +230,16 @@ public class PlayerController : MonoBehaviour
             else if (power < 100) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1000 / power);
             else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
             else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
-            pos.z += .2f;
+            pos.z += .4f;
             transform.position = pos;
             if (isStatus2) onBoarding.SetActive(false);
-
+            DistanceTextUi();
         }
         if (!isStatus2)
         {
             canTap = false;
             OpenRagDolsRb();
             isForceTime = true;
-
         }
     }
 
@@ -242,10 +274,11 @@ public class PlayerController : MonoBehaviour
             else if (power < 100) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1000 / power);
             else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
             else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
-            pos.z += .2f;
+            pos.z += .4f;
             transform.position = pos;
-           
+            DistanceTextUi();
         }
+        Time.timeScale = 1;
         canTap = false;
         OpenRagDolsRb();
         isForceTime = true;
@@ -271,7 +304,7 @@ public class PlayerController : MonoBehaviour
             else if (power < 100) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1000 / power);
             else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
             else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
-            pos.z += .2f;
+            pos.z += .4f;
             int rnd = Random.Range(0, 400);
             if (rnd < 7)
             {
@@ -308,7 +341,7 @@ public class PlayerController : MonoBehaviour
             else if (power < 100) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1000 / power);
             else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
             else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
-            pos.z += .2f;
+            pos.z += .4f;
             int rnd = Random.Range(0, 400);
             if (rnd < 7)
             {
@@ -346,7 +379,7 @@ public class PlayerController : MonoBehaviour
             else if (power < 100) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1000 / power);
             else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
             else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
-            pos.z += .2f;
+            pos.z += .4f;
             int rnd = Random.Range(0, 400);
             if (rnd < 7)
             {
@@ -394,6 +427,24 @@ public class PlayerController : MonoBehaviour
         foreach (Rigidbody rb in ragDollsRb)
         {
             rb.useGravity = false;
+        }
+    }
+
+    void CloseColliders()
+	{
+        foreach (Rigidbody rb in ragDollsRb)
+        {
+            rb.gameObject.GetComponent<Collider>().enabled = false;
+            rb.isKinematic = true;
+        }
+    }
+
+    void OpenColliders()
+	{
+        foreach (Rigidbody rb in ragDollsRb)
+        {
+            rb.gameObject.GetComponent<Collider>().enabled = true;
+            rb.isKinematic = false;
         }
     }
 

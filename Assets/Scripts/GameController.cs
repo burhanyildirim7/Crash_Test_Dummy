@@ -107,7 +107,7 @@ public class GameController : MonoBehaviour
         }
         else if (type >= 8) DummyAnim.SetTrigger("koltuk");
 
-        if (type == 4) PlayerController.instance.transform.localPosition = Vector3.zero;
+        if (type <= 4) PlayerController.instance.transform.localPosition = new Vector3(0, .65f, .49f);
         else if (type > 4 && type <= 7) PlayerController.instance.transform.localPosition = new Vector3(0, -1, 0);
         else if(type == 8) PlayerController.instance.transform.localPosition = new Vector3(-0.27f, 0, -0.66f);
         else if(type > 8 && type <= 11) PlayerController.instance.transform.localPosition = new Vector3(-0.56f, 1, -0.66f);
