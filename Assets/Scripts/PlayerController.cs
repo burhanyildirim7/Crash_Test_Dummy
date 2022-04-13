@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
     public List<Rigidbody> ragDollsRb = new();
     public GameObject cameraLookAtTarget,hips;
     private bool isForceTime;
-    float lastForce = 2000;
+    float lastForce = 3000;
     public GameObject paralarParenti,birdPrefab,onBoarding;
     public GameObject arac;
 
