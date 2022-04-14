@@ -18,6 +18,8 @@ public class GameController : MonoBehaviour
     public float firlatmaAzaltma2 = 4;
     [Header("Arabanýn doðrusal ve dairesel hýzý")]
     public float aracSpeed;
+    [Header("Guc carpani.. addforce degerini etkiler")]
+    public float gucCarpani;
     public float aracrRotSpeed;
     [Header("Diger Degiskenler")]
     public GameObject heightPlatform;

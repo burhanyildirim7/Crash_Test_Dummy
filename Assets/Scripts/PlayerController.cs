@@ -106,24 +106,29 @@ public class PlayerController : MonoBehaviour
 		{
             Debug.Log("forse 1");
             foreach (Rigidbody rb in ragDollsRb) rb.velocity = Vector3.zero;
-            lastForce = lastForce * 10;
-            foreach (Rigidbody rb in ragDollsRb) rb.AddForce(new Vector3(0, 1, 1) * lastForce);
+            float power = (float)(GameController.instance.power + GameController.instance.height) / 200;
+            Debug.Log("p"+power);
+            lastForce = lastForce*4 +  lastForce * 100 * power;
+            Debug.Log(lastForce);
+            foreach (Rigidbody rb in ragDollsRb) rb.AddForce(new Vector3(0, .7f, 1) * lastForce);
             isForceTime = false;
         }
 		else if (isForceTime2)
 		{
             Debug.Log("forse 2");
             foreach (Rigidbody rb in ragDollsRb) rb.velocity = Vector3.zero;
-            lastForce = lastForce * 10;
-            foreach (Rigidbody rb in ragDollsRb) rb.AddForce(new Vector3(0, 1, 1) * lastForce);
+            float power = (float)(GameController.instance.power + GameController.instance.height) / 200;
+            lastForce = lastForce * 4 + lastForce * 100 * power;
+            foreach (Rigidbody rb in ragDollsRb) rb.AddForce(new Vector3(0, .7f, 1) * lastForce);
             isForceTime2 = false;
         }
 		else if (isForceTime3)
 		{
             Debug.Log("forse 3");
             foreach (Rigidbody rb in ragDollsRb) rb.velocity = Vector3.zero;
-            lastForce = lastForce * 10;
-            foreach (Rigidbody rb in ragDollsRb) rb.AddForce(new Vector3(0, 1, 1) * lastForce);
+            float power = (float)(GameController.instance.power + GameController.instance.height) / 200;
+            lastForce = lastForce * 4 + lastForce * 100 * power;
+            foreach (Rigidbody rb in ragDollsRb) rb.AddForce(new Vector3(0, .7f, 1) * lastForce);
             isForceTime3 = false;
         }
 		if (hips.GetComponent<Rigidbody>().velocity.y < 0  && !zeminde)
