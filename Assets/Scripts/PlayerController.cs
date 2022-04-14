@@ -104,32 +104,42 @@ public class PlayerController : MonoBehaviour
 	{
 		if (isForceTime)
 		{
+            isForceTime = false;
             Debug.Log("forse 1");
             foreach (Rigidbody rb in ragDollsRb) rb.velocity = Vector3.zero;
-            float power = (float)(GameController.instance.power + GameController.instance.height) / 200;
+            float power = (float)(GameController.instance.power + GameController.instance.height) / 100;
             Debug.Log("p"+power);
-            lastForce = lastForce*4 +  lastForce * 100 * power;
+            lastForce = lastForce*8+  lastForce * 100 * power;
             Debug.Log(lastForce);
-            foreach (Rigidbody rb in ragDollsRb) rb.AddForce(new Vector3(0, .7f, 1) * lastForce);
-            isForceTime = false;
+            //Trajectory.instance.UpdateDots(engel.transform.position, new Vector3(0, .3f, 1));
+            Trajectory.instance.SimulateTrajectory(hips,hips.transform.position, new Vector3(0, .3f, 1) * lastForce);
+            //foreach (Rigidbody rb in ragDollsRb) rb.AddForce(new Vector3(0, .3f, 1) * lastForce);
+            hips.GetComponent<Rigidbody>().AddForce(new Vector3(0, .3f, 1) * lastForce);
+          
         }
 		else if (isForceTime2)
 		{
+            isForceTime2 = false;
             Debug.Log("forse 2");
             foreach (Rigidbody rb in ragDollsRb) rb.velocity = Vector3.zero;
-            float power = (float)(GameController.instance.power + GameController.instance.height) / 200;
-            lastForce = lastForce * 4 + lastForce * 100 * power;
-            foreach (Rigidbody rb in ragDollsRb) rb.AddForce(new Vector3(0, .7f, 1) * lastForce);
-            isForceTime2 = false;
+            float power = (float)(GameController.instance.power + GameController.instance.height) / 100;
+            lastForce = lastForce * 8 + lastForce * 100 * power;
+            //foreach (Rigidbody rb in ragDollsRb) rb.AddForce(new Vector3(0, .3f, 1) * lastForce);
+            Trajectory.instance.SimulateTrajectory(hips, hips.transform.position, new Vector3(0, .3f, 1) * lastForce);
+            hips.GetComponent<Rigidbody>().AddForce(new Vector3(0, .3f, 1) * lastForce);
+            
         }
 		else if (isForceTime3)
 		{
+            isForceTime3 = false;
             Debug.Log("forse 3");
             foreach (Rigidbody rb in ragDollsRb) rb.velocity = Vector3.zero;
-            float power = (float)(GameController.instance.power + GameController.instance.height) / 200;
-            lastForce = lastForce * 4 + lastForce * 100 * power;
-            foreach (Rigidbody rb in ragDollsRb) rb.AddForce(new Vector3(0, .7f, 1) * lastForce);
-            isForceTime3 = false;
+            float power = (float)(GameController.instance.power + GameController.instance.height) / 100;
+            lastForce = lastForce * 8 + lastForce * 100 * power;
+            Trajectory.instance.SimulateTrajectory(hips, hips.transform.position, new Vector3(0, .3f, 1) * lastForce);
+            hips.GetComponent<Rigidbody>().AddForce(new Vector3(0, .3f, 1) * lastForce);
+            //foreach (Rigidbody rb in ragDollsRb) rb.AddForce(new Vector3(0, .3f, 1) * lastForce);
+            
         }
 		if (hips.GetComponent<Rigidbody>().velocity.y < 0  && !zeminde)
 		{
