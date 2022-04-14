@@ -62,6 +62,7 @@ public class PlayerController : MonoBehaviour
                     canTap = false;
                     atisSirasi++;
                     onBoarding.SetActive(false);
+                    Time.timeScale = 1;
 				}
                 else if(atisSirasi == 1 && canTap)
 				{
@@ -71,31 +72,9 @@ public class PlayerController : MonoBehaviour
                     canTap = false;
                     atisSirasi++;
                     onBoarding.SetActive(false);
+                    Time.timeScale = 1;
                 }
 			}
-			//if (onBoarding.activeInHierarchy) {
-   //             lastForce = 2000;
-   //             isForceTime3 = true;
-   //         }
-            
-            //if (status == 0)
-            //{
-            //	isStatus1 = true;
-            //	status = 1;
-            //	canTap = false;
-            //	StartCoroutine(Tap1());
-            //             onBoarding.SetActive(false);
-            //             Time.timeScale = 1f;
-            //         }
-            //else if (status == 1)
-            //{
-            //	isStatus2 = true;
-            //	status = 2;
-            //	canTap = false;
-            //	StartCoroutine(Tap2());
-            //             onBoarding.SetActive(false);
-            //             Time.timeScale = 1f;
-            //         }
         }
 	}
 
@@ -109,7 +88,7 @@ public class PlayerController : MonoBehaviour
             foreach (Rigidbody rb in ragDollsRb) rb.velocity = Vector3.zero;
             float power = (float)(GameController.instance.power + GameController.instance.height) / 100;
             Debug.Log("p"+power);
-            lastForce = lastForce*8+  lastForce * 100 * power;
+            lastForce = 150000;
             Debug.Log(lastForce);
             //Trajectory.instance.UpdateDots(engel.transform.position, new Vector3(0, .3f, 1));
             Trajectory.instance.SimulateTrajectory(hips,hips.transform.position, new Vector3(0, .3f, 1) * lastForce);
@@ -123,7 +102,7 @@ public class PlayerController : MonoBehaviour
             Debug.Log("forse 2");
             foreach (Rigidbody rb in ragDollsRb) rb.velocity = Vector3.zero;
             float power = (float)(GameController.instance.power + GameController.instance.height) / 100;
-            lastForce = lastForce * 8 + lastForce * 100 * power;
+            lastForce = 150000;
             //foreach (Rigidbody rb in ragDollsRb) rb.AddForce(new Vector3(0, .3f, 1) * lastForce);
             Trajectory.instance.SimulateTrajectory(hips, hips.transform.position, new Vector3(0, .3f, 1) * lastForce);
             hips.GetComponent<Rigidbody>().AddForce(new Vector3(0, .3f, 1) * lastForce);
@@ -135,7 +114,7 @@ public class PlayerController : MonoBehaviour
             Debug.Log("forse 3");
             foreach (Rigidbody rb in ragDollsRb) rb.velocity = Vector3.zero;
             float power = (float)(GameController.instance.power + GameController.instance.height) / 100;
-            lastForce = lastForce * 8 + lastForce * 100 * power;
+            lastForce = 150000;
             Trajectory.instance.SimulateTrajectory(hips, hips.transform.position, new Vector3(0, .3f, 1) * lastForce);
             hips.GetComponent<Rigidbody>().AddForce(new Vector3(0, .3f, 1) * lastForce);
             //foreach (Rigidbody rb in ragDollsRb) rb.AddForce(new Vector3(0, .3f, 1) * lastForce);
@@ -143,7 +122,13 @@ public class PlayerController : MonoBehaviour
         }
 		if (hips.GetComponent<Rigidbody>().velocity.y < 0  && !zeminde)
 		{
-            if(atisSirasi < 2)onBoarding.SetActive(true);
+
+            if (atisSirasi < 2)
+            {
+                onBoarding.SetActive(true);
+                Time.timeScale = .5f;
+            }
+
             Debug.Log("canTap true");
             lastForce = 2000;
             canTap = true;

@@ -62,6 +62,19 @@ public class Trajectory : MonoBehaviour
 
         for (var i = 0; i < _maxPhysicsFrameIterations; i++)
         {
+            int rnd = Random.Range(1,300);
+            if(rnd < 10)
+			{
+                GameObject obj = Instantiate(GameController.instance.coinPrefab,ghostObj.transform.position,Quaternion.identity);
+                obj.transform.tag = "para";
+                obj.transform.parent = PlayerController.instance.paralarParenti.transform;
+			}
+            else if(rnd == 11)
+			{
+                GameObject obj = Instantiate(GameController.instance.birdPrefab, ghostObj.transform.position, Quaternion.identity);
+                obj.transform.tag = "kus";
+                obj.transform.parent = PlayerController.instance.paralarParenti.transform;
+            }
             _physicsScene.Simulate(Time.fixedDeltaTime);
             _line.SetPosition(i, ghostObj.transform.position);
         }

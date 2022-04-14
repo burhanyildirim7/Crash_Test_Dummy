@@ -30,6 +30,8 @@ public class GameController : MonoBehaviour
     public int type;
     [HideInInspector]public bool firstCrash;
     public GameObject zeminTarget;
+    public GameObject coinPrefab, birdPrefab;
+
 
     private void Awake()
 	{
