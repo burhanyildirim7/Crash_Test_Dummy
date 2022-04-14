@@ -54,9 +54,14 @@ public class AracControl : MonoBehaviour
             isAracActive = false;
             other.GetComponent<Collider>().enabled = false;
             PlayerController.instance.transform.parent = null;
-            StartCoroutine(PlayerController.instance.ThrowPlayer());
+            PlayerController.instance.playerAnimator.enabled = false;
+            PlayerController.instance.OpenRagDolsRb();
+            PlayerController.instance.OpenColliders();
+            PlayerController.instance.isForceTime = true;
+            PlayerController.instance.zeminde = false;
+            PlayerController.instance.havada = true;
+            //StartCoroutine(PlayerController.instance.ThrowPlayer());
             Instantiate(Explossions[0], other.transform.position + new Vector3(0,1,1), Quaternion.identity);
-            Debug.Log("engel");
 			if (GameController.instance.type >= 8)
 			{
                 GameObject kirikCamlar = Instantiate(kirikCamlarPrefab, PlayerController.instance.hips.transform.position, Quaternion.identity);

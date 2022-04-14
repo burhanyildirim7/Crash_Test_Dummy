@@ -22,10 +22,11 @@ public class PlayerController : MonoBehaviour
     public Animator playerAnimator;
     public List<Rigidbody> ragDollsRb = new();
     public GameObject cameraLookAtTarget,hips;
-    private bool isForceTime;
+    public bool isForceTime,isForceTime2,isForceTime3,zeminde,havada;
     float lastForce = 2000;
     public GameObject paralarParenti,birdPrefab,onBoarding;
     public GameObject arac;
+    int atisSirasi; // 0 ise ilk extra fýrlatma  1 ise ikinci extra fýrlatma mümkündür
 
     public static PlayerController instance;
     private void Awake()
@@ -39,35 +40,63 @@ public class PlayerController : MonoBehaviour
         PlayerPrefs.SetFloat("distance",100);
         StartingEvents();
         DistanceTextGroundForStart();
+        zeminde = true;
     }
 
 	private void Update()
 	{
+
 		if (distanceTextTime)
 		{
             CalculateDistance();
 		}
-        if (Input.GetMouseButtonDown(0) && canTap)
+        if (Input.GetMouseButtonDown(0))
 		{
-			if (status == 0)
+			if (havada)
 			{
-				isStatus1 = true;
-				status = 1;
-				canTap = false;
-				StartCoroutine(Tap1());
-                onBoarding.SetActive(false);
-                Time.timeScale = 1f;
-            }
-			else if (status == 1)
-			{
-				isStatus2 = true;
-				status = 2;
-				canTap = false;
-				StartCoroutine(Tap2());
-                onBoarding.SetActive(false);
-                Time.timeScale = 1f;
-            }
-		}
+                if(atisSirasi == 0 && canTap)
+				{
+                    isForceTime = false;
+                    isForceTime2 = true;
+                    isForceTime3 = false;
+                    canTap = false;
+                    atisSirasi++;
+                    onBoarding.SetActive(false);
+				}
+                else if(atisSirasi == 1 && canTap)
+				{
+                    isForceTime = false;
+                    isForceTime2 = false;
+                    isForceTime3 = true;
+                    canTap = false;
+                    atisSirasi++;
+                    onBoarding.SetActive(false);
+                }
+			}
+			//if (onBoarding.activeInHierarchy) {
+   //             lastForce = 2000;
+   //             isForceTime3 = true;
+   //         }
+            
+            //if (status == 0)
+            //{
+            //	isStatus1 = true;
+            //	status = 1;
+            //	canTap = false;
+            //	StartCoroutine(Tap1());
+            //             onBoarding.SetActive(false);
+            //             Time.timeScale = 1f;
+            //         }
+            //else if (status == 1)
+            //{
+            //	isStatus2 = true;
+            //	status = 2;
+            //	canTap = false;
+            //	StartCoroutine(Tap2());
+            //             onBoarding.SetActive(false);
+            //             Time.timeScale = 1f;
+            //         }
+        }
 	}
 
 
@@ -75,11 +104,36 @@ public class PlayerController : MonoBehaviour
 	{
 		if (isForceTime)
 		{
-            foreach (Rigidbody rb in ragDollsRb) rb.AddForce(Vector3.forward * lastForce);
-            lastForce -= 50f;
-            if (lastForce <= 0) isForceTime = false;
-        }     
-    }
+            Debug.Log("forse 1");
+            foreach (Rigidbody rb in ragDollsRb) rb.velocity = Vector3.zero;
+            lastForce = lastForce * 10;
+            foreach (Rigidbody rb in ragDollsRb) rb.AddForce(new Vector3(0, 1, 1) * lastForce);
+            isForceTime = false;
+        }
+		else if (isForceTime2)
+		{
+            Debug.Log("forse 2");
+            foreach (Rigidbody rb in ragDollsRb) rb.velocity = Vector3.zero;
+            lastForce = lastForce * 10;
+            foreach (Rigidbody rb in ragDollsRb) rb.AddForce(new Vector3(0, 1, 1) * lastForce);
+            isForceTime2 = false;
+        }
+		else if (isForceTime3)
+		{
+            Debug.Log("forse 3");
+            foreach (Rigidbody rb in ragDollsRb) rb.velocity = Vector3.zero;
+            lastForce = lastForce * 10;
+            foreach (Rigidbody rb in ragDollsRb) rb.AddForce(new Vector3(0, 1, 1) * lastForce);
+            isForceTime3 = false;
+        }
+		if (hips.GetComponent<Rigidbody>().velocity.y < 0  && !zeminde)
+		{
+            if(atisSirasi < 2)onBoarding.SetActive(true);
+            Debug.Log("canTap true");
+            lastForce = 2000;
+            canTap = true;
+		}
+	}
 
 	private void LateUpdate()
 	{
@@ -91,10 +145,10 @@ public class PlayerController : MonoBehaviour
 	/// </summary>
 	public void StartingEvents()
     {
+        atisSirasi = 0;
         UIController.instance.bestDistanceText.text = "";
         distanceTextTime = false;
         playerAnimator.enabled = true;
-        Debug.Log("çaðrýldý");
         transform.parent = arac.transform;
         GameController.instance.SetAracSpeedAndRotate();
         GameController.instance.SetVehicleType();
@@ -102,8 +156,7 @@ public class PlayerController : MonoBehaviour
         AracControl.instance.current = 0;
         status = 0;
         isStatus1 = isStatus2 = false;
-        CloseRagDolsRb();
-        CloseColliders();
+        CloseColliders(); // titrememesi için bu silme bunu
         onBoarding.SetActive(false);
 		tempY = 0;
         isForceTime = false;
@@ -144,8 +197,6 @@ public class PlayerController : MonoBehaviour
         distanceText.gameObject.transform.position = new Vector3(0.5f,1.15f,bestDistance);
     }
 
-
-
     public IEnumerator ThrowPlayer()
 	{
         OpenColliders();
@@ -160,7 +211,7 @@ public class PlayerController : MonoBehaviour
         while (time < 1 && !isStatus1)
 		{
             if (isStatus1) onBoarding.SetActive(false);
-            yield return new WaitForSeconds(.01f);
+            yield return new WaitForSeconds(.005f);
             if (tempY > transform.position.y )
             {
                 canTap = true;
@@ -180,7 +231,7 @@ public class PlayerController : MonoBehaviour
             else if (power < 100) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1000 / power);
             else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
             else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
-            pos.z += .4f;
+            pos.z += .2f;
             transform.position = pos;
             if (isStatus1) onBoarding.SetActive(false);
             DistanceTextUi();
@@ -209,7 +260,7 @@ public class PlayerController : MonoBehaviour
         while (time < 1 && !isStatus2)
         {
             if (isStatus2) onBoarding.SetActive(false);
-            yield return new WaitForSeconds(.01f);
+            yield return new WaitForSeconds(.005f);
             canTap = false;
             if (tempY > transform.position.y ) { 
                 canTap = true;
@@ -230,7 +281,7 @@ public class PlayerController : MonoBehaviour
             else if (power < 100) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1000 / power);
             else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
             else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
-            pos.z += .4f;
+            pos.z += .2f;
             transform.position = pos;
             if (isStatus2) onBoarding.SetActive(false);
             DistanceTextUi();
@@ -257,7 +308,7 @@ public class PlayerController : MonoBehaviour
         onBoarding.SetActive(false);
         while (time < 1 )
         {
-            yield return new WaitForSeconds(.01f);
+            yield return new WaitForSeconds(.005f);
             canTap = false;
             if (tempY > transform.position.y)
             {
@@ -274,7 +325,7 @@ public class PlayerController : MonoBehaviour
             else if (power < 100) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1000 / power);
             else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
             else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
-            pos.z += .4f;
+            pos.z += .2f;
             transform.position = pos;
             DistanceTextUi();
         }
@@ -304,7 +355,7 @@ public class PlayerController : MonoBehaviour
             else if (power < 100) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1000 / power);
             else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
             else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
-            pos.z += .4f;
+            pos.z += .2f;
             int rnd = Random.Range(0, 400);
             if (rnd < 7)
             {
@@ -341,7 +392,7 @@ public class PlayerController : MonoBehaviour
             else if (power < 100) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1000 / power);
             else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
             else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
-            pos.z += .4f;
+            pos.z += .2f;
             int rnd = Random.Range(0, 400);
             if (rnd < 7)
             {
@@ -379,7 +430,7 @@ public class PlayerController : MonoBehaviour
             else if (power < 100) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1000 / power);
             else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
             else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
-            pos.z += .4f;
+            pos.z += .2f;
             int rnd = Random.Range(0, 400);
             if (rnd < 7)
             {
@@ -409,7 +460,7 @@ public class PlayerController : MonoBehaviour
     
 
 
-    void OpenRagDolsRb()
+    public void OpenRagDolsRb()
 	{
         onBoarding.SetActive(false);
         hips.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
@@ -421,7 +472,7 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
-    void CloseRagDolsRb()
+    public void CloseRagDolsRb()
     {
         hips.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
         foreach (Rigidbody rb in ragDollsRb)
@@ -430,7 +481,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void CloseColliders()
+    public void CloseColliders()
 	{
         foreach (Rigidbody rb in ragDollsRb)
         {
@@ -439,7 +490,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void OpenColliders()
+    public void OpenColliders()
 	{
         foreach (Rigidbody rb in ragDollsRb)
         {

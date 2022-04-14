@@ -84,10 +84,9 @@ public class GameController : MonoBehaviour
     public void SetHeightPlatform()
 	{
         heightPlatform.transform.position = new Vector3(0, 2 + (float)height/4, 0);
-        zeminTarget.transform.position = new Vector3(0,.5f,5.5f+((float)height /10));
+        zeminTarget.transform.position = new Vector3(0,.95f,5.5f+((float)height /10));
         AracControl.instance.transform.position = carTarget.position;
         AracControl.instance.transform.rotation = carTarget.rotation;
-        Debug.Log("bu daa");      
     }
 
 
@@ -107,8 +106,9 @@ public class GameController : MonoBehaviour
         }
         else if (type >= 8) DummyAnim.SetTrigger("koltuk");
 
-        if (type <= 4) PlayerController.instance.transform.localPosition = new Vector3(0, .65f, .49f);
-        else if (type > 4 && type <= 7) PlayerController.instance.transform.localPosition = new Vector3(0, -1, 0);
+        if (type < 4) PlayerController.instance.transform.localPosition = new Vector3(0, 1.17f, .49f);
+        else if(type == 4) PlayerController.instance.transform.localPosition = new Vector3(0, .5f, .49f);
+        else if (type > 4 && type <= 7) PlayerController.instance.transform.localPosition = new Vector3(0, -.5f, 0);
         else if(type == 8) PlayerController.instance.transform.localPosition = new Vector3(-0.27f, 0, -0.66f);
         else if(type > 8 && type <= 11) PlayerController.instance.transform.localPosition = new Vector3(-0.56f, 1, -0.66f);
         else if(type == 12 ) PlayerController.instance.transform.localPosition = new Vector3(-0.37f, -0.14f, -0.28f);
@@ -117,14 +117,13 @@ public class GameController : MonoBehaviour
         else if(type > 16 && type <= 19) PlayerController.instance.transform.localPosition = new Vector3(-0.85f, 0.59f, -0.58f);
         else if(type == 20) PlayerController.instance.transform.localPosition = new Vector3(-0.5f, -0.62f, -0.37f);
         else if(type > 20) PlayerController.instance.transform.localPosition = new Vector3(-0.6f, -0.17f, -0.1f);
-        Debug.Log(type);
     }
 
 
     public void SetAracSpeedAndRotate()
 	{
         int level = power + height;
-        aracSpeed = aracrRotSpeed = 7 + level * .2f;
+        aracSpeed = aracrRotSpeed = 12 + level * .2f;
 	}
 
     public void PreStartingEvents()

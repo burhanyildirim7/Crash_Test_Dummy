@@ -32,6 +32,8 @@ public class ParaController : MonoBehaviour
 			GameController.instance.firstCrash = false;
 			UIController.instance.ActivateWinScreen();
 			AracControl.instance.isAracActive = false;
+			PlayerController.instance.isForceTime2 = false;
+			PlayerController.instance.zeminde = true;
 		}
 		else if (collision.transform.CompareTag("zemin"))
 		{
