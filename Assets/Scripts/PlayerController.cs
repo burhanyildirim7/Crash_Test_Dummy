@@ -51,7 +51,7 @@ public class PlayerController : MonoBehaviour
 
 	private void Update()
 	{
-        cameraLookAtTarget.transform.position = new(0, hips.transform.position.y, hips.transform.position.z + 2);
+       
         if (zeminde && Mathf.Abs(hips.GetComponent<Rigidbody>().velocity.z) <= .1f && isDistanceTime)
 		{
 			CalculateDistance();
@@ -145,7 +145,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public IEnumerator TimeSlow()
+	private void LateUpdate()
+	{
+        cameraLookAtTarget.transform.position = new(0, hips.transform.position.y, hips.transform.position.z + 2);
+    }
+
+	public IEnumerator TimeSlow()
     {
         Time.timeScale = .1f;
         yield return new WaitForSeconds(.1f);
