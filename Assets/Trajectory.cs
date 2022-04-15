@@ -6,6 +6,10 @@ using UnityEngine.SceneManagement;
 public class Trajectory : MonoBehaviour
 {
 	public static Trajectory instance;
+    LineRenderer lineRenderer;
+    int lineSegmentCount = 100;
+    List<Vector3> linePoints = new();
+
 	private void Awake()
 	{
 		if (instance == null) instance = this;
@@ -24,7 +28,8 @@ public class Trajectory : MonoBehaviour
 
     private void Start()
     {
-        CreatePhysicsScene();
+        lineRenderer = GetComponent<LineRenderer>();
+       // CreatePhysicsScene();
     }
 
     public void CreatePhysicsScene()
@@ -80,5 +85,56 @@ public class Trajectory : MonoBehaviour
         }
         Destroy(ghostObj.gameObject);
     }
+
+    public void UpdateTrajectory(Vector3 forceVector, Rigidbody rigidBody, Vector3 startingPoint)
+	{
+        //lineSegmentCount = 70 + (GameController.instance.power + GameController.instance.height)*2;
+        lineSegmentCount = 10 + ((int)forceVector.z /500);
+        Vector3 velocity = (forceVector / rigidBody.mass) * Time.fixedDeltaTime;
+
+        float FlightDuration = (2 * velocity.y) / Physics.gravity.y;
+
+        float stepTime = FlightDuration / lineSegmentCount;
+
+        linePoints.Clear();
+
+		for (int i = 0; i < lineSegmentCount; i++)
+		{
+
+
+            float stepTimePassed = stepTime * i;
+
+            Vector3 MovementVector = new Vector3(
+                velocity.x * stepTimePassed,
+                velocity.y * stepTimePassed - 0.5f * Physics.gravity.y * stepTimePassed * stepTimePassed,
+                velocity.z*stepTimePassed
+                );
+
+            linePoints.Add(-MovementVector + startingPoint);
+
+            //int rnd = Random.Range(1, 200);
+            //if (rnd < 10)
+            //{
+            //    GameObject obj = Instantiate(GameController.instance.coinPrefab, -MovementVector + startingPoint, Quaternion.identity);
+            //    obj.transform.tag = "para";
+            //    obj.transform.parent = PlayerController.instance.paralarParenti.transform;
+            //}
+        }
+
+        lineRenderer.positionCount = linePoints.Count;
+        lineRenderer.SetPositions(linePoints.ToArray());
+
+		for (int i = 5; i < linePoints.Count; i+=5)
+		{
+            Debug.Log(i);
+            int rnd = Random.Range(1,3);
+            if (rnd == 1)
+            {
+                GameObject obj = Instantiate(GameController.instance.coinPrefab, linePoints[i], Quaternion.identity);
+                obj.transform.tag = "para";
+                obj.transform.parent = PlayerController.instance.paralarParenti.transform;
+            }
+        }
+	}
 
 }

@@ -181,8 +181,9 @@ public class UIController : MonoBehaviour
                 StartCoroutine(StartScreenCoinsDissolve(coin));
             }
         }
-        Instantiate(scoreEffect, new Vector3(1.34f, 5.43F, -1.15F), Quaternion.identity);
+        Instantiate(scoreEffect, new Vector3(1.97f, 11F, -1.15F), Quaternion.identity);
         //ScoreTextAnim.SetTrigger("score");
+        SetParaText();
         startScreenCoinImage.SetActive(false);
         startScreenCoinImage.transform.localPosition = new Vector3(0, -446, 0);
     }
@@ -235,6 +236,7 @@ public class UIController : MonoBehaviour
 
     public void SetPowerAndLevelText()
 	{
+       
         powerLevelText.text = "Level " + PlayerPrefs.GetInt("power").ToString();
         heightLevelText.text = "Level " + PlayerPrefs.GetInt("height").ToString();
         powerCostText.text = PlayerPrefs.GetInt("fiyatp").ToString();

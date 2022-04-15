@@ -14,7 +14,7 @@ public class ParaController : MonoBehaviour
 			GameController.instance.para++;
 			GameController.instance.levelPara++;
 			PlayerPrefs.SetInt("para", GameController.instance.para);
-			UIController.instance.SetParaText();
+			//UIController.instance.SetParaText();
 
 		}
 		else if (other.CompareTag("kus"))
@@ -34,7 +34,8 @@ public class ParaController : MonoBehaviour
 			AracControl.instance.isAracActive = false;
 			PlayerController.instance.isForceTime2 = false;
 			PlayerController.instance.zeminde = true;		
-			PlayerController.instance.isDistanceTime = true;		
+			PlayerController.instance.isDistanceTime = true;
+			PlayerController.instance.OpenGravities();
 		}
 		if (collision.transform.CompareTag("zemin"))
 		{

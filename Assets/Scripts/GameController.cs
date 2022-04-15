@@ -44,11 +44,11 @@ public class GameController : MonoBehaviour
 
 	void Start()
     {
-        PlayerPrefs.DeleteAll();
+        //PlayerPrefs.DeleteAll();
         //para = 250000;
-        PlayerPrefs.SetInt("para", para);
-        PlayerPrefs.SetInt("power", power);
-        PlayerPrefs.SetInt("height", height);
+        //PlayerPrefs.SetInt("para", para);
+        //PlayerPrefs.SetInt("power", power);
+        //PlayerPrefs.SetInt("height", height);
         fiyatPower = PlayerPrefs.GetInt("fiyatp");
         fiyatHeight = PlayerPrefs.GetInt("fiyath");
         if(fiyatPower == 0)
@@ -78,11 +78,12 @@ public class GameController : MonoBehaviour
 	{
         if(para >= fiyatPower)
 		{
+            para -= fiyatPower;
+            power++;
+            SetVehicleType();
             Debug.Log("ilk " + para);
             Debug.Log("ilk " + fiyatPower);
             Debug.Log("ilk " + power);
-            para -= fiyatPower;
-            power++;
             fiyatPower += fiyatPower / 2;
             PlayerPrefs.SetInt("para", para);
             PlayerPrefs.SetInt("fiyatp", fiyatPower);
@@ -102,11 +103,13 @@ public class GameController : MonoBehaviour
            
             para -= fiyatHeight;
             height++;
+            SetVehicleType();
             SetHeightPlatform();
             fiyatHeight += fiyatHeight / 2; 
             PlayerPrefs.SetInt("fiyath", fiyatHeight);
             PlayerPrefs.SetInt("para", para);
             PlayerPrefs.SetInt("height", height);
+            
         }
         UIController.instance.SetPowerAndLevelText();
         UIController.instance.ControlButtonsActivate();
