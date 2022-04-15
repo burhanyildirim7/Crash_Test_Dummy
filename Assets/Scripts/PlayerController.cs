@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.UI;
-using TMPro;
+using DG.Tweening;
 
 public class PlayerController : MonoBehaviour
 {
-    public TextMeshPro distanceText;
+    public Text distanceTextZemin,bestDistancneTextZemin;
     public Text distanceUiText;
     [SerializeField] float bestDistance;
     public bool distanceTextTime;
@@ -18,15 +18,19 @@ public class PlayerController : MonoBehaviour
     [SerializeField]private GameObject engel;
     int status = 0;
     bool canTap, isStatus1,isStatus2;
+    public bool isDistanceTime;
     float tempY;
     public Animator playerAnimator;
     public List<Rigidbody> ragDollsRb = new();
     public GameObject cameraLookAtTarget,hips;
     public bool isForceTime,isForceTime2,isForceTime3,zeminde,havada;
     float lastForce = 2000;
+    float tempLastForce;
     public GameObject paralarParenti,birdPrefab,onBoarding;
     public GameObject arac;
     int atisSirasi; // 0 ise ilk extra fýrlatma  1 ise ikinci extra fýrlatma mümkündür
+    public GameObject groundTextCanvas,cizgi,distancePanel,bestDistancePanel;
+    
 
     public static PlayerController instance;
     private void Awake()
@@ -37,7 +41,9 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        PlayerPrefs.SetFloat("distance",100);
+        DOTween.Init();
+        //PlayerPrefs.DeleteAll();
+       // PlayerPrefs.SetInt("distance",100);
         StartingEvents();
         DistanceTextGroundForStart();
         zeminde = true;
@@ -45,12 +51,15 @@ public class PlayerController : MonoBehaviour
 
 	private void Update()
 	{
-
-		if (distanceTextTime)
+        cameraLookAtTarget.transform.position = new(0, hips.transform.position.y, hips.transform.position.z + 2);
+        if (zeminde && Mathf.Abs(hips.GetComponent<Rigidbody>().velocity.z) <= .1f && isDistanceTime)
 		{
-            CalculateDistance();
-		}
-        if (Input.GetMouseButtonDown(0))
+			CalculateDistance();
+            isDistanceTime = false;
+            Time.timeScale = 1;
+            PlayerController.instance.onBoarding.SetActive(false);
+        }
+		if (Input.GetMouseButtonDown(0))
 		{
 			if (havada)
 			{
@@ -76,76 +85,81 @@ public class PlayerController : MonoBehaviour
                 }
 			}
         }
-	}
 
-
-	private void FixedUpdate()
-	{
-		if (isForceTime)
-		{
+        if (isForceTime)
+        {
+            StartCoroutine(TimeSlow());
+            lastForce = 2000;
             isForceTime = false;
             Debug.Log("forse 1");
             foreach (Rigidbody rb in ragDollsRb) rb.velocity = Vector3.zero;
-            float power = (float)(GameController.instance.power + GameController.instance.height) / 100;
-            Debug.Log("p"+power);
-            lastForce = 150000;
-            Debug.Log(lastForce);
-            //Trajectory.instance.UpdateDots(engel.transform.position, new Vector3(0, .3f, 1));
-            Trajectory.instance.SimulateTrajectory(hips,hips.transform.position, new Vector3(0, .3f, 1) * lastForce);
-            //foreach (Rigidbody rb in ragDollsRb) rb.AddForce(new Vector3(0, .3f, 1) * lastForce);
+            float power = (float)(GameController.instance.power + GameController.instance.height) / 2;
+            lastForce = lastForce * 12 + lastForce * power * GameController.instance.firlatmaForce; ;
+            tempLastForce = lastForce;
+            Trajectory.instance.SimulateTrajectory(hips, hips.transform.position, new Vector3(0, .3f, 1) * lastForce);
             hips.GetComponent<Rigidbody>().AddForce(new Vector3(0, .3f, 1) * lastForce);
-          
+            //hips.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
+            //hips.transform.DOJump(new Vector3(0, 1, 200), 20, 1, 4).SetEase(Ease.Linear).OnComplete(() =>
+            //         hips.GetComponent<Rigidbody>().AddForce(new Vector3(0, .3f, 1)*20000)
+            //); ;       
         }
-		else if (isForceTime2)
-		{
+        else if (isForceTime2)
+        {
+            //StartCoroutine(CloseConstraints());
             isForceTime2 = false;
-            Debug.Log("forse 2");
             foreach (Rigidbody rb in ragDollsRb) rb.velocity = Vector3.zero;
-            float power = (float)(GameController.instance.power + GameController.instance.height) / 100;
-            lastForce = 150000;
-            //foreach (Rigidbody rb in ragDollsRb) rb.AddForce(new Vector3(0, .3f, 1) * lastForce);
+            float power = (float)(GameController.instance.power + GameController.instance.height) / 5;
+            //lastForce = lastForce * 12 + lastForce * power;
+            lastForce = tempLastForce / 1.5f;
+            tempLastForce = lastForce;
             Trajectory.instance.SimulateTrajectory(hips, hips.transform.position, new Vector3(0, .3f, 1) * lastForce);
             hips.GetComponent<Rigidbody>().AddForce(new Vector3(0, .3f, 1) * lastForce);
-            
-        }
-		else if (isForceTime3)
-		{
-            isForceTime3 = false;
-            Debug.Log("forse 3");
-            foreach (Rigidbody rb in ragDollsRb) rb.velocity = Vector3.zero;
-            float power = (float)(GameController.instance.power + GameController.instance.height) / 100;
-            lastForce = 150000;
-            Trajectory.instance.SimulateTrajectory(hips, hips.transform.position, new Vector3(0, .3f, 1) * lastForce);
-            hips.GetComponent<Rigidbody>().AddForce(new Vector3(0, .3f, 1) * lastForce);
-            //foreach (Rigidbody rb in ragDollsRb) rb.AddForce(new Vector3(0, .3f, 1) * lastForce);
-            
-        }
-		if (hips.GetComponent<Rigidbody>().velocity.y < 0  && !zeminde)
-		{
 
+        }
+        else if (isForceTime3)
+        {
+            //StartCoroutine(CloseConstraints());
+            isForceTime3 = false;
+            foreach (Rigidbody rb in ragDollsRb) rb.velocity = Vector3.zero;
+            float power = (float)(GameController.instance.power + GameController.instance.height) / 5;
+            //lastForce = lastForce * 12 + lastForce * power;
+            lastForce = tempLastForce / 1.5f;
+            tempLastForce = lastForce;
+            Trajectory.instance.SimulateTrajectory(hips, hips.transform.position, new Vector3(0, .3f, 1) * lastForce);
+            hips.GetComponent<Rigidbody>().AddForce(new Vector3(0, .3f, 1) * lastForce);
+
+        }
+        if (hips.GetComponent<Rigidbody>().velocity.y < 0 && !zeminde)
+        {
+            Debug.Log("canTap true");
+            lastForce = 2000;
+            canTap = true;
+        }
+        if (hips.transform.position.y > 3 &&  hips.transform.position.y < 30 && hips.GetComponent<Rigidbody>().velocity.y < 0 )
+        {
             if (atisSirasi < 2)
             {
                 onBoarding.SetActive(true);
                 Time.timeScale = .5f;
             }
-
-            Debug.Log("canTap true");
-            lastForce = 2000;
-            canTap = true;
-		}
-	}
-
-	private void LateUpdate()
-	{
-        cameraLookAtTarget.transform.position = new(0, hips.transform.position.y, hips.transform.position.z + 2);
+        }
     }
 
-	/// <summary>
-	/// Bu fonksiyon her level baslarken cagrilir. 
-	/// </summary>
-	public void StartingEvents()
+    public IEnumerator TimeSlow()
+    {
+        Time.timeScale = .1f;
+        yield return new WaitForSeconds(.1f);
+        Time.timeScale = 1;
+       
+    }
+
+    /// <summary>
+    /// Bu fonksiyon her level baslarken cagrilir. 
+    /// </summary>
+    public void StartingEvents()
     {
         atisSirasi = 0;
+        canTap = false;
         UIController.instance.bestDistanceText.text = "";
         distanceTextTime = false;
         playerAnimator.enabled = true;
@@ -160,44 +174,59 @@ public class PlayerController : MonoBehaviour
         onBoarding.SetActive(false);
 		tempY = 0;
         isForceTime = false;
+        isForceTime2 = false;
+        isForceTime3 = false;
         lastForce = 2000;
+        isDistanceTime = false;
+        groundTextCanvas.transform.position = new Vector3(0, 0, -30);
     }
 
 	public void CalculateDistance()
 	{
-        float distance = hips.transform.position.z - engel.transform.position.z;
-        distanceText.text = distance.ToString("#.00");
-        distanceUiText.text = "Distance : " + distance.ToString("#.00");
+        UIController.instance.ActivateWinScreen();
+        groundTextCanvas.transform.position = new Vector3(1.2f,10,hips.transform.position.z);
+        groundTextCanvas.transform.DOMove(new Vector3(1.2f, 2.2f, hips.transform.position.z), 1f).SetEase(Ease.OutBounce);
+        bestDistancePanel.SetActive(false);
+        distancePanel.SetActive(true);
+        int distance = (int)hips.transform.position.z - (int)engel.transform.position.z;
+        distanceTextZemin.text = distance.ToString() + "m";
+        distanceUiText.text =  distance.ToString() + "m";
+        bestDistance = PlayerPrefs.GetInt("distance");
         if (distance > bestDistance)
 		{
             bestDistance = distance;
-            PlayerPrefs.SetFloat("distance", distance + 5);
-            distanceText.gameObject.transform.position = hips.transform.position + new Vector3(2.5f, 0, 0);
-            UIController.instance.bestDistanceText.text = "Best Distance : " + distance.ToString("#.00");
-		}           
-	}
+            PlayerPrefs.SetInt("distance", distance);
+            cizgi.transform.position = new Vector3(0, 1.15F, hips.transform.position.z);
+            bestDistancneTextZemin.text = distance.ToString() + "m";
+            bestDistancePanel.SetActive(true);
+            distancePanel.SetActive(false);
+            UIController.instance.bestDistanceText.text = "Best Distance : " + distance.ToString();
+		}
+        
+    }
 
     public void DistanceTextUi()
 	{
-		float distance = hips.transform.position.z - engel.transform.position.z;
-		distanceUiText.text = "Distance : " + distance.ToString("#.00");
+        int distance = (int)hips.transform.position.z - (int)engel.transform.position.z;
+        distanceUiText.text = distance.ToString() + "m";
         if(distance > bestDistance)
 		{
             Debug.Log(distance);
             bestDistance = distance;
-            PlayerPrefs.SetFloat("distance", distance);
-            distanceText.gameObject.transform.position = new Vector3(.5f,1.15f,bestDistance);
+            PlayerPrefs.SetInt("distance", distance);
+            groundTextCanvas.transform.position = new Vector3(.5f,5f,hips.transform.position.z);
         }
 	}
 
     public void DistanceTextGroundForStart()
 	{
-        bestDistance = PlayerPrefs.GetFloat("distance");
-        distanceUiText.text = "Distance : " + bestDistance.ToString("#.00");
-        distanceText.gameObject.transform.position = new Vector3(0.5f,1.15f,bestDistance);
+        bestDistance = PlayerPrefs.GetInt("distance");
+        distanceUiText.text =  bestDistance.ToString() + "m";
+        cizgi.transform.position = new Vector3(0, 1.15F, engel.transform.position.z + bestDistance);
     }
 
-    public IEnumerator ThrowPlayer()
+	#region ESKI SISTEM 
+	public IEnumerator ThrowPlayer()
 	{
         OpenColliders();
         onBoarding.SetActive(false);
@@ -448,8 +477,10 @@ public class PlayerController : MonoBehaviour
         }
         yield return new WaitForSeconds(.001f);
     }
+	#endregion
 
-    public void ClearParalarParenti()
+
+	public void ClearParalarParenti()
 	{
         int childs = paralarParenti.transform.childCount;
         for (int i = childs - 1; i >= 0; i--)
@@ -459,13 +490,29 @@ public class PlayerController : MonoBehaviour
     }
     
 
+    public void OpenKinematics()
+	{
+        foreach (Rigidbody rb in ragDollsRb)
+        {
+            rb.isKinematic = true;
+        }
+    }
+
+    public void CloseKinematics()
+	{
+        foreach (Rigidbody rb in ragDollsRb)
+        {
+            rb.isKinematic = false;
+        }
+    }
+
 
     public void OpenRagDolsRb()
 	{
         onBoarding.SetActive(false);
-        hips.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
-        hips.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePositionX;
-        ClearParalarParenti();
+		hips.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+		hips.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePositionX;
+		ClearParalarParenti();
         foreach(Rigidbody rb in ragDollsRb)
 		{
             rb.useGravity = true;
@@ -497,6 +544,29 @@ public class PlayerController : MonoBehaviour
             rb.gameObject.GetComponent<Collider>().enabled = true;
             rb.isKinematic = false;
         }
+    }
+
+    public IEnumerator CloseConstraints()
+	{
+        foreach (Rigidbody rb in ragDollsRb)
+        {
+            rb.constraints = RigidbodyConstraints.FreezeAll;
+        }
+        hips.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+        hips.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePositionX;
+
+        yield return new WaitForSeconds(.2f);
+        OpenConstraints();
+
+    }
+
+    public void OpenConstraints()
+    {
+        foreach (Rigidbody rb in ragDollsRb)
+        {
+            rb.constraints = RigidbodyConstraints.None;
+        }
+        hips.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePositionX;
     }
 
 

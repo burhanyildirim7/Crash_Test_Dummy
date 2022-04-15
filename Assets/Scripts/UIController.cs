@@ -13,6 +13,7 @@ public class UIController : MonoBehaviour
     public Animator ScoreTextAnim;
     public TextMeshProUGUI heightLevelText, powerLevelText, heightCostText, powerCostText;
     public Text paraText,bestDistanceText;
+    public Button powerButton, heightButton;
 
 
 
@@ -28,6 +29,7 @@ public class UIController : MonoBehaviour
         // StartUI();
         bestDistanceText.text = " ";
         SetPowerAndLevelText();
+        ControlButtonsActivate();
     }
 
     // Oyun ilk acildiginda calisacak olan ui fonksiyonu. 
@@ -75,6 +77,7 @@ public class UIController : MonoBehaviour
         StartCoroutine(StartScreenCoinEffect());
         PlayerController.instance.StartingEvents();
         GameController.instance.SetHeightPlatform();
+        ControlButtonsActivate();
     }
 
 
@@ -122,7 +125,7 @@ public class UIController : MonoBehaviour
 
     IEnumerator WinScreenDelay()
     {
-        yield return new WaitForSeconds(6f);
+        yield return new WaitForSeconds(3f);
         WinPanel.SetActive(true);
         winScreenScoreText.text = "0";
         int sayac = 0;
@@ -234,8 +237,8 @@ public class UIController : MonoBehaviour
 	{
         powerLevelText.text = "Level " + PlayerPrefs.GetInt("power").ToString();
         heightLevelText.text = "Level " + PlayerPrefs.GetInt("height").ToString();
-        powerCostText.text = (20 * GameController.instance.power).ToString();
-        heightCostText.text = (20 * GameController.instance.height).ToString();
+        powerCostText.text = PlayerPrefs.GetInt("fiyatp").ToString();
+        heightCostText.text = PlayerPrefs.GetInt("fiyath").ToString();
         SetParaText();
 	}
 
@@ -253,5 +256,26 @@ public class UIController : MonoBehaviour
 	{
         paraText.text = PlayerPrefs.GetInt("para").ToString();
 	}
+
+    public void ControlButtonsActivate()
+	{
+        if (PlayerPrefs.GetInt("para")>= PlayerPrefs.GetInt("fiyatp"))
+		{
+            powerButton.interactable = true;
+		}
+        else
+		{
+            powerButton.interactable = false;
+		}
+
+        if (PlayerPrefs.GetInt("para") >= PlayerPrefs.GetInt("fiyath"))
+        {
+            heightButton.interactable = true;
+        }
+        else
+        {
+            heightButton.interactable = false;
+        }
+    }
 
 }

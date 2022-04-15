@@ -30,14 +30,17 @@ public class ParaController : MonoBehaviour
 		if (collision.transform.CompareTag("zemin") && GameController.instance.firstCrash)
 		{
 			GameController.instance.firstCrash = false;
-			UIController.instance.ActivateWinScreen();
+		
 			AracControl.instance.isAracActive = false;
 			PlayerController.instance.isForceTime2 = false;
-			PlayerController.instance.zeminde = true;
+			PlayerController.instance.zeminde = true;		
+			PlayerController.instance.isDistanceTime = true;		
 		}
-		else if (collision.transform.CompareTag("zemin"))
+		if (collision.transform.CompareTag("zemin"))
 		{
-			PlayerController.instance.distanceTextTime = true;
+			Time.timeScale = 1;
+			PlayerController.instance.onBoarding.SetActive(false);
 		}
+
 	}
 }

@@ -60,7 +60,7 @@ public class Trajectory : MonoBehaviour
 
         _line.positionCount = (int)velocity.z;
 
-        for (var i = 0; i < _maxPhysicsFrameIterations; i++)
+        for (var i = 0; i < 300; i++)
         {
             int rnd = Random.Range(1,300);
             if(rnd < 10)

@@ -55,12 +55,14 @@ public class AracControl : MonoBehaviour
             other.GetComponent<Collider>().enabled = false;
             PlayerController.instance.transform.parent = null;
             PlayerController.instance.playerAnimator.enabled = false;
+            //PlayerController.instance.playerAnimator.SetTrigger("fly");
+            //StartCoroutine(OpenRagdols());
             PlayerController.instance.OpenRagDolsRb();
             PlayerController.instance.OpenColliders();
             PlayerController.instance.isForceTime = true;
             PlayerController.instance.zeminde = false;
             PlayerController.instance.havada = true;
-            //StartCoroutine(PlayerController.instance.ThrowPlayer());
+            PlayerController.instance.distanceTextTime = true;
             Instantiate(Explossions[0], other.transform.position + new Vector3(0,1,1), Quaternion.identity);
 			if (GameController.instance.type >= 8)
 			{
@@ -82,5 +84,13 @@ public class AracControl : MonoBehaviour
         Destroy(obj);
 	}
 
+    public IEnumerator OpenRagdols()
+    {
+        yield return new WaitForSeconds(2f);
+        PlayerController.instance.playerAnimator.enabled = false;
+    }
+
+
+ 
 
 }

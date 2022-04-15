@@ -20,17 +20,20 @@ public class GameController : MonoBehaviour
     public float aracSpeed;
     [Header("Guc carpani.. addforce degerini etkiler")]
     public float gucCarpani;
+    [Header("Para")]
+    public int para;
     public float aracrRotSpeed;
     [Header("Diger Degiskenler")]
     public GameObject heightPlatform;
     public Transform carTarget;
-    [HideInInspector] public int para,levelPara;
+    [HideInInspector] public int levelPara;
     public List<GameObject> vehicles = new();
     public Animator DummyAnim;
     public int type;
     [HideInInspector]public bool firstCrash;
     public GameObject zeminTarget;
     public GameObject coinPrefab, birdPrefab;
+    int fiyatPower,fiyatHeight;
 
 
     private void Awake()
@@ -41,12 +44,25 @@ public class GameController : MonoBehaviour
 
 	void Start()
     {
-       // PlayerPrefs.DeleteAll();
-        para = 250000;
+        PlayerPrefs.DeleteAll();
+        //para = 250000;
         PlayerPrefs.SetInt("para", para);
         PlayerPrefs.SetInt("power", power);
         PlayerPrefs.SetInt("height", height);
+        fiyatPower = PlayerPrefs.GetInt("fiyatp");
+        fiyatHeight = PlayerPrefs.GetInt("fiyath");
+        if(fiyatPower == 0)
+		{
+            fiyatPower = 10;
+            PlayerPrefs.SetInt("fiyatp",10);
+		}
+        if (fiyatHeight == 0)
+        {
+            fiyatHeight = 10;
+            PlayerPrefs.SetInt("fiyath", 10);
+        }
 
+        
         //power = PlayerPrefs.GetInt("power");
         //height = PlayerPrefs.GetInt("height");
         //para = PlayerPrefs.GetInt("para");
@@ -60,29 +76,40 @@ public class GameController : MonoBehaviour
 
     public void IncreasePower()
 	{
-        if(para >= 20 * power)
+        if(para >= fiyatPower)
 		{
-            
-            para -= 20 * power;
+            Debug.Log("ilk " + para);
+            Debug.Log("ilk " + fiyatPower);
+            Debug.Log("ilk " + power);
+            para -= fiyatPower;
             power++;
+            fiyatPower += fiyatPower / 2;
             PlayerPrefs.SetInt("para", para);
+            PlayerPrefs.SetInt("fiyatp", fiyatPower);
             PlayerPrefs.SetInt("power", power);
+            Debug.Log("son " + para);
+            Debug.Log("son " + fiyatPower);
+            Debug.Log("son " + power);
         }
         UIController.instance.SetPowerAndLevelText();
+        UIController.instance.ControlButtonsActivate();
 	}
 
     public void IncreaseHeight()
 	{
-        if (para >= 20 * height)
+        if (para >= fiyatHeight)
         {
            
-            para -= 20 * height;
+            para -= fiyatHeight;
             height++;
             SetHeightPlatform();
+            fiyatHeight += fiyatHeight / 2; 
+            PlayerPrefs.SetInt("fiyath", fiyatHeight);
             PlayerPrefs.SetInt("para", para);
             PlayerPrefs.SetInt("height", height);
         }
         UIController.instance.SetPowerAndLevelText();
+        UIController.instance.ControlButtonsActivate();
     }
 
     public void SetHeightPlatform()
