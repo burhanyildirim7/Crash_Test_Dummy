@@ -184,6 +184,7 @@ public class PlayerController : MonoBehaviour
         lastForce = 2000;
         isDistanceTime = false;
         groundTextCanvas.transform.position = new Vector3(0, 0, -30);
+        ClearParalarParenti();
     }
 
 	public void CalculateDistance()
