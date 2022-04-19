@@ -30,6 +30,9 @@ public class PlayerController : MonoBehaviour
     public GameObject arac;
     int atisSirasi; // 0 ise ilk extra fýrlatma  1 ise ikinci extra fýrlatma mümkündür
     public GameObject groundTextCanvas,cizgi,distancePanel,bestDistancePanel;
+    public GameObject kuslar;
+    private Vector3 kuslarPozisyon;
+    public GameObject tuyEfecti;
     
 
     public static PlayerController instance;
@@ -47,6 +50,7 @@ public class PlayerController : MonoBehaviour
         StartingEvents();
         DistanceTextGroundForStart();
         zeminde = true;
+        kuslarPozisyon = kuslar.transform.localPosition;
     }
 
 	private void Update()
@@ -72,6 +76,10 @@ public class PlayerController : MonoBehaviour
                     atisSirasi++;
                     onBoarding.SetActive(false);
                     Time.timeScale = 1;
+                    kuslar.SetActive(true);
+                    kuslar.transform.position = hips.transform.position + new Vector3(0,0,4);
+                    StartCoroutine(KuslarCarpti());
+                    
 				}
                 else if(atisSirasi == 1 && canTap)
 				{
@@ -82,6 +90,9 @@ public class PlayerController : MonoBehaviour
                     atisSirasi++;
                     onBoarding.SetActive(false);
                     Time.timeScale = 1;
+                    kuslar.SetActive(true);
+                    kuslar.transform.position = hips.transform.position + new Vector3(0, 0, 4);
+                    StartCoroutine(KuslarCarpti());
                 }
 			}
         }
@@ -144,6 +155,26 @@ public class PlayerController : MonoBehaviour
         if(!AracControl.instance.isAracActive)
         cameraLookAtTarget.transform.position = new(0, hips.transform.position.y, hips.transform.position.z +2);
     }
+
+    public IEnumerator KuslarCarpti()
+	{
+        for (int i = 0; i < 3; i++)
+        {
+            Instantiate(tuyEfecti, hips.transform.position, Quaternion.identity);
+        }
+        //kuslar.transform.DOLocalMove(new Vector3(6, 0, -6), 1).OnComplete(() => {
+        //    kuslar.SetActive(false);
+        //    kuslar.transform.position = kuslarPozisyon;
+        //});
+        float sayac = 0;
+        while (sayac <= 1)
+		{
+            //kuslar.transform.position = Vector3.Lerp(kuslar.transform.position,hips.transform.position, sayac);
+            sayac += .05f;
+            yield return new WaitForSeconds(0.02f);
+		}
+		
+	}
 
 	public IEnumerator TimeSlow()
     {
