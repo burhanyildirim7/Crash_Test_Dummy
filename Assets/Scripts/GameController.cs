@@ -145,19 +145,34 @@ public class GameController : MonoBehaviour
             DummyAnim.SetTrigger("keko");
         }
         else if (type >= 8) DummyAnim.SetTrigger("koltuk");
-        Debug.Log(type);
-        if(type == 0) PlayerController.instance.transform.localPosition = new Vector3(0, .5f, .49f);
-        else  if (type < 4) PlayerController.instance.transform.localPosition = new Vector3(0, .66f, .49f);
-        else if(type == 4) PlayerController.instance.transform.localPosition = new Vector3(0, 0f, .49f);
+        Debug.Log("vehicle type"  + type);
+        if (type == 0) PlayerController.instance.transform.localPosition = new Vector3(0, .5f, .49f);
+        else if (type < 4) PlayerController.instance.transform.localPosition = new Vector3(0, .66f, .49f);
+        else if (type == 4) PlayerController.instance.transform.localPosition = new Vector3(0, 0f, .49f);
         else if (type > 4 && type <= 7) PlayerController.instance.transform.localPosition = new Vector3(0, -1f, 0);
-        else if(type == 8) PlayerController.instance.transform.localPosition = new Vector3(-0.27f, 0, -0.66f);
-        else if(type > 8 && type <= 11) PlayerController.instance.transform.localPosition = new Vector3(-0.56f, 1, -0.66f);
-        else if(type == 12 ) PlayerController.instance.transform.localPosition = new Vector3(-0.37f, -0.3f, -0.28f);
-        else if(type > 12 && type <= 15 ) PlayerController.instance.transform.localPosition = new Vector3(-0.5f, 0.43f, -0.46f);
-        else if(type == 16 ) PlayerController.instance.transform.localPosition = new Vector3(-0.7f, -0.55f, -0.67f);
-        else if(type > 16 && type <= 19) PlayerController.instance.transform.localPosition = new Vector3(-0.85f, 0.26f, -0.58f);
-        else if(type == 20) PlayerController.instance.transform.localPosition = new Vector3(-0.5f, -0.92f, -0.37f);
-        else if(type > 20) PlayerController.instance.transform.localPosition = new Vector3(-0.6f, 0.33f, -0.1f);
+        else if (type == 8) PlayerController.instance.transform.localPosition = new Vector3(-0.27f, 0, -0.66f);
+        else if (type > 8 && type <= 11)
+        {
+            PlayerController.instance.transform.localPosition = new Vector3(-0.56f, 1, -0.66f);
+        }
+        else if (type == 12) PlayerController.instance.transform.localPosition = new Vector3(-0.37f, -0.3f, -0.28f);
+        else if (type > 12 && type <= 15)
+        {
+            PlayerController.instance.transform.localPosition = new Vector3(-0.5f, 0.43f, -0.46f);
+        }
+        else if (type == 16) PlayerController.instance.transform.localPosition = new Vector3(-0.7f, -0.55f, -0.67f);
+        else if (type > 16 && type <= 19)
+        {
+            PlayerController.instance.transform.localPosition = new Vector3(-0.85f, 0.26f, -0.58f);
+        }
+        else if (type == 20) PlayerController.instance.transform.localPosition = new Vector3(-0.5f, -0.92f, -0.37f);
+        else if (type > 20)
+        {
+            PlayerController.instance.transform.localPosition = new Vector3(-0.6f, 0.33f, -0.1f);
+        }
+
+
+        
     }
 
 
