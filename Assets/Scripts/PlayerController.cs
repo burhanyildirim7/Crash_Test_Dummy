@@ -95,42 +95,31 @@ public class PlayerController : MonoBehaviour
             Debug.Log("forse 1");
             foreach (Rigidbody rb in ragDollsRb) rb.velocity = Vector3.zero;
             float power = (float)(GameController.instance.power + GameController.instance.height) / 2;
-            lastForce = lastForce * 12 + lastForce * power * GameController.instance.firlatmaForce; ;
+            lastForce = lastForce * 8 + lastForce * power * GameController.instance.firlatmaForce; ;
             Debug.Log("force " + lastForce);
             tempLastForce = lastForce;
-            //Trajectory.instance.SimulateTrajectory(hips, hips.transform.position, new Vector3(0, .3f, 1) * lastForce);
-            Trajectory.instance.UpdateTrajectory(new Vector3(0, .3f, 1) * lastForce, hips.GetComponent<Rigidbody>(), hips.transform.position);
-            hips.GetComponent<Rigidbody>().AddForce(new Vector3(0, .3f, 1) * lastForce);
-            //hips.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
-            //hips.transform.DOJump(new Vector3(0, 1, 200), 20, 1, 4).SetEase(Ease.Linear).OnComplete(() =>
-            //         hips.GetComponent<Rigidbody>().AddForce(new Vector3(0, .3f, 1)*20000)
-            //); ;       
+            Trajectory.instance.UpdateTrajectory(new Vector3(0, .3f, 1) * lastForce, hips.GetComponent<Rigidbody>(), hips.transform.position,true);
+            hips.GetComponent<Rigidbody>().AddForce(new Vector3(0, .3f, 1) * lastForce);     
         }
         else if (isForceTime2)
         {
-            //StartCoroutine(CloseConstraints());
             isForceTime2 = false;
             foreach (Rigidbody rb in ragDollsRb) rb.velocity = Vector3.zero;
             float power = (float)(GameController.instance.power + GameController.instance.height) / 5;
-            //lastForce = lastForce * 12 + lastForce * power;
             lastForce = tempLastForce / 1.5f;
             tempLastForce = lastForce;
-            //Trajectory.instance.SimulateTrajectory(hips, hips.transform.position, new Vector3(0, .3f, 1) * lastForce);
-            Trajectory.instance.UpdateTrajectory(new Vector3(0, .3f, 1) * lastForce, hips.GetComponent<Rigidbody>(), hips.transform.position);
+            Trajectory.instance.UpdateTrajectory(new Vector3(0, .3f, 1) * lastForce, hips.GetComponent<Rigidbody>(), hips.transform.position,false);
             hips.GetComponent<Rigidbody>().AddForce(new Vector3(0, .3f, 1) * lastForce);
 
         }
         else if (isForceTime3)
         {
-            //StartCoroutine(CloseConstraints());
             isForceTime3 = false;
             foreach (Rigidbody rb in ragDollsRb) rb.velocity = Vector3.zero;
             float power = (float)(GameController.instance.power + GameController.instance.height) / 5;
-            //lastForce = lastForce * 12 + lastForce * power;
             lastForce = tempLastForce / 1.5f;
             tempLastForce = lastForce;
-            //Trajectory.instance.SimulateTrajectory(hips, hips.transform.position, new Vector3(0, .3f, 1) * lastForce);
-            Trajectory.instance.UpdateTrajectory(new Vector3(0, .3f, 1) * lastForce, hips.GetComponent<Rigidbody>(), hips.transform.position);
+            Trajectory.instance.UpdateTrajectory(new Vector3(0, .3f, 1) * lastForce, hips.GetComponent<Rigidbody>(), hips.transform.position,false);
             hips.GetComponent<Rigidbody>().AddForce(new Vector3(0, .3f, 1) * lastForce);
 
         }
@@ -152,7 +141,8 @@ public class PlayerController : MonoBehaviour
 
 	private void LateUpdate()
 	{
-        cameraLookAtTarget.transform.position = new(0, hips.transform.position.y, hips.transform.position.z + 2);
+        if(!AracControl.instance.isAracActive)
+        cameraLookAtTarget.transform.position = new(0, hips.transform.position.y, hips.transform.position.z +2);
     }
 
 	public IEnumerator TimeSlow()

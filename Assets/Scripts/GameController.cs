@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class GameController : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class GameController : MonoBehaviour
     public int height;
     [Header("Ilk Firlatma Azaltma Katsayýsý")]
     public float firlatmaForce = 1;
+ 
     [Header("Ikinci Firlatma Azaltma Katsayýsý")]
     public float firlatmaAzaltma1 = 2;
     [Header("Ucuncu Firlatma Azaltma Katsayýsý")]
@@ -53,13 +55,13 @@ public class GameController : MonoBehaviour
         fiyatHeight = PlayerPrefs.GetInt("fiyath");
         if(fiyatPower == 0)
 		{
-            fiyatPower = 10;
-            PlayerPrefs.SetInt("fiyatp",10);
+            fiyatPower = 100;
+            PlayerPrefs.SetInt("fiyatp",100);
 		}
         if (fiyatHeight == 0)
         {
-            fiyatHeight = 10;
-            PlayerPrefs.SetInt("fiyath", 10);
+            fiyatHeight = 100;
+            PlayerPrefs.SetInt("fiyath", 100);
         }
 
         
@@ -68,6 +70,7 @@ public class GameController : MonoBehaviour
         //para = PlayerPrefs.GetInt("para");
         //power = 15;
         //height = 15;
+        Debug.Log(height);
         isContinue = false;
         SetHeightPlatform();
         UIController.instance.SetPowerAndLevelText();
@@ -84,7 +87,7 @@ public class GameController : MonoBehaviour
             Debug.Log("ilk " + para);
             Debug.Log("ilk " + fiyatPower);
             Debug.Log("ilk " + power);
-            fiyatPower += fiyatPower / 2;
+            fiyatPower = 100 + (power * power * 4);
             PlayerPrefs.SetInt("para", para);
             PlayerPrefs.SetInt("fiyatp", fiyatPower);
             PlayerPrefs.SetInt("power", power);
@@ -105,7 +108,7 @@ public class GameController : MonoBehaviour
             height++;
             SetVehicleType();
             SetHeightPlatform();
-            fiyatHeight += fiyatHeight / 2; 
+            fiyatHeight = 100 + (height * height * 4); 
             PlayerPrefs.SetInt("fiyath", fiyatHeight);
             PlayerPrefs.SetInt("para", para);
             PlayerPrefs.SetInt("height", height);
@@ -117,11 +120,14 @@ public class GameController : MonoBehaviour
 
     public void SetHeightPlatform()
 	{
-        heightPlatform.transform.position = new Vector3(0, 2 + (float)height/4, 0);
-        zeminTarget.transform.position = new Vector3(0,.95f,5.5f+((float)height /10));
+        float y = (16f / 100f) * height;
+        float z = (-11f / 100f) * height;
+       
+        heightPlatform.transform.position = new Vector3(0, 2, 0) + new Vector3(0, y, z);
+        AracControl.instance.UpdateRoad();
         AracControl.instance.transform.position = carTarget.position;
-        AracControl.instance.transform.rotation = carTarget.rotation;
-    }
+		AracControl.instance.transform.rotation = carTarget.rotation;
+	}
 
 
     public void SetVehicleType()
@@ -139,18 +145,19 @@ public class GameController : MonoBehaviour
             DummyAnim.SetTrigger("keko");
         }
         else if (type >= 8) DummyAnim.SetTrigger("koltuk");
-
-        if (type < 4) PlayerController.instance.transform.localPosition = new Vector3(0, 1.17f, .49f);
-        else if(type == 4) PlayerController.instance.transform.localPosition = new Vector3(0, .5f, .49f);
-        else if (type > 4 && type <= 7) PlayerController.instance.transform.localPosition = new Vector3(0, -.5f, 0);
+        Debug.Log(type);
+        if(type == 0) PlayerController.instance.transform.localPosition = new Vector3(0, .5f, .49f);
+        else  if (type < 4) PlayerController.instance.transform.localPosition = new Vector3(0, .66f, .49f);
+        else if(type == 4) PlayerController.instance.transform.localPosition = new Vector3(0, 0f, .49f);
+        else if (type > 4 && type <= 7) PlayerController.instance.transform.localPosition = new Vector3(0, -1f, 0);
         else if(type == 8) PlayerController.instance.transform.localPosition = new Vector3(-0.27f, 0, -0.66f);
         else if(type > 8 && type <= 11) PlayerController.instance.transform.localPosition = new Vector3(-0.56f, 1, -0.66f);
-        else if(type == 12 ) PlayerController.instance.transform.localPosition = new Vector3(-0.37f, -0.14f, -0.28f);
+        else if(type == 12 ) PlayerController.instance.transform.localPosition = new Vector3(-0.37f, -0.3f, -0.28f);
         else if(type > 12 && type <= 15 ) PlayerController.instance.transform.localPosition = new Vector3(-0.5f, 0.43f, -0.46f);
-        else if(type == 16 ) PlayerController.instance.transform.localPosition = new Vector3(-0.7f, -0.37f, -0.67f);
-        else if(type > 16 && type <= 19) PlayerController.instance.transform.localPosition = new Vector3(-0.85f, 0.59f, -0.58f);
-        else if(type == 20) PlayerController.instance.transform.localPosition = new Vector3(-0.5f, -0.62f, -0.37f);
-        else if(type > 20) PlayerController.instance.transform.localPosition = new Vector3(-0.6f, -0.17f, -0.1f);
+        else if(type == 16 ) PlayerController.instance.transform.localPosition = new Vector3(-0.7f, -0.55f, -0.67f);
+        else if(type > 16 && type <= 19) PlayerController.instance.transform.localPosition = new Vector3(-0.85f, 0.26f, -0.58f);
+        else if(type == 20) PlayerController.instance.transform.localPosition = new Vector3(-0.5f, -0.92f, -0.37f);
+        else if(type > 20) PlayerController.instance.transform.localPosition = new Vector3(-0.6f, 0.33f, -0.1f);
     }
 
 
@@ -162,6 +169,10 @@ public class GameController : MonoBehaviour
 
     public void PreStartingEvents()
 	{
+        AracControl.instance.cmVcam.GetCinemachineComponent<CinemachineTransposer>().m_XDamping = 2;
+        AracControl.instance.cmVcam.GetCinemachineComponent<CinemachineTransposer>().m_YDamping = 2;
+        AracControl.instance.cmVcam.GetCinemachineComponent<CinemachineTransposer>().m_ZDamping = 2;
+        AracControl.instance.cmVcam.GetCinemachineComponent<CinemachineTransposer>().m_YawDamping = 2;
         firstCrash = true;
         isContinue = true;
         levelPara = 0;

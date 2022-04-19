@@ -1,17 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using PathCreation;
+using PathCreation.Examples;
+using Cinemachine;
 
 public class AracControl : MonoBehaviour
 {
+    public CinemachineVirtualCamera cmVcam;
+    public PathCreator pathCreator;
+    public RoadMeshCreator roadMeshCreator;
     public static AracControl instance;
-
+    public float speed = 5;
+    float distanceTravelled;
     // way point ile movement
-    public GameObject[] wayPoints;
+    public Transform[] waypoints;
     public int current = 0;
     float WPradius = 1;
     public bool isAracActive = false;
     public GameObject kirikCamlarPrefab;
+
 
 
     public List<GameObject> Explossions = new();
@@ -23,34 +31,47 @@ public class AracControl : MonoBehaviour
 	}
 	void Start()
     {
-       // isAracActive = true;
-        transform.position = wayPoints[0].transform.position;
+        distanceTravelled = 8;
+        UpdateRoad();
     }
 
-	private void Update()
-	{
-		if (isAracActive)
-		{
-            if (Vector3.Distance(wayPoints[current].transform.position, transform.position) < WPradius)
-            {
-                current++;
+   
 
-                if (current >= wayPoints.Length)
-                {
-                    current = 0;
-                }
-            }
-            transform.position = Vector3.MoveTowards(transform.position, wayPoints[current].transform.position, Time.deltaTime * GameController.instance.aracSpeed);
-            Vector3 relativePos = wayPoints[current].transform.position - transform.position;
-            Quaternion toRotation = Quaternion.LookRotation(relativePos);
-            transform.rotation = Quaternion.Lerp(transform.rotation, toRotation, GameController.instance.aracrRotSpeed * Time.deltaTime);
+    private void FixedUpdate()
+	{
+
+        if (isAracActive)
+		{
+            
+            speed = 8 + (GameController.instance.power + GameController.instance.height) / 10;
+            if (speed > 30) speed = 30;
+            distanceTravelled += speed * Time.deltaTime;
+            transform.position = pathCreator.path.GetPointAtDistance(distanceTravelled);
+            PlayerController.instance.cameraLookAtTarget.transform.position = transform.position + new Vector3 (0,5,0);
+            transform.rotation = Quaternion.Euler(pathCreator.path.GetRotationAtDistance(distanceTravelled).eulerAngles.x, pathCreator.path.GetRotationAtDistance(distanceTravelled).eulerAngles.y, 0);          
         }
+	}
+
+    public void UpdateRoad()
+	{
+        if (waypoints.Length > 0)
+        {
+            BezierPath bezierPath = new BezierPath(waypoints, false, PathSpace.xyz);
+            pathCreator.bezierPath = bezierPath;
+        }
+        pathCreator.TriggerPathUpdate();
+        roadMeshCreator.UpdateRoad();
+
     }
 
     private void OnTriggerEnter(Collider other)
 	{
 		if (other.CompareTag("engel"))
 		{
+            cmVcam.GetCinemachineComponent<CinemachineTransposer>().m_XDamping = 0;
+            cmVcam.GetCinemachineComponent<CinemachineTransposer>().m_YDamping = 0;
+            cmVcam.GetCinemachineComponent<CinemachineTransposer>().m_ZDamping = 0;
+            cmVcam.GetCinemachineComponent<CinemachineTransposer>().m_YawDamping = 0;
             isAracActive = false;
             other.GetComponent<Collider>().enabled = false;
             PlayerController.instance.transform.parent = null;
@@ -63,7 +84,9 @@ public class AracControl : MonoBehaviour
             PlayerController.instance.zeminde = false;
             PlayerController.instance.havada = true;
             PlayerController.instance.distanceTextTime = true;
-            Instantiate(Explossions[0], other.transform.position + new Vector3(0,1,1), Quaternion.identity);
+            distanceTravelled = 0;
+            if(GameController.instance.power < 32)Instantiate(Explossions[0], other.transform.position + new Vector3(0,2,0), Quaternion.identity);
+            else Instantiate(Explossions[1], other.transform.position + new Vector3(0,2,1), Quaternion.identity);
 			if (GameController.instance.type >= 8)
 			{
                 GameObject kirikCamlar = Instantiate(kirikCamlarPrefab, PlayerController.instance.hips.transform.position, Quaternion.identity);

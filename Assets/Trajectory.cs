@@ -86,7 +86,7 @@ public class Trajectory : MonoBehaviour
         Destroy(ghostObj.gameObject);
     }
 
-    public void UpdateTrajectory(Vector3 forceVector, Rigidbody rigidBody, Vector3 startingPoint)
+    public void UpdateTrajectory(Vector3 forceVector, Rigidbody rigidBody, Vector3 startingPoint , bool coinOlustur)
 	{
         //lineSegmentCount = 70 + (GameController.instance.power + GameController.instance.height)*2;
         lineSegmentCount = 10 + ((int)forceVector.z /500);
@@ -124,17 +124,20 @@ public class Trajectory : MonoBehaviour
         lineRenderer.positionCount = linePoints.Count;
         lineRenderer.SetPositions(linePoints.ToArray());
 
-		for (int i = 5; i < linePoints.Count; i+=5)
+		if (coinOlustur)
 		{
-            Debug.Log(i);
-            int rnd = Random.Range(1,3);
-            if (rnd == 1)
+            for (int i = 5; i < linePoints.Count; i += 5)
             {
-                GameObject obj = Instantiate(GameController.instance.coinPrefab, linePoints[i], Quaternion.identity);
-                obj.transform.tag = "para";
-                obj.transform.parent = PlayerController.instance.paralarParenti.transform;
+                int rnd = Random.Range(1, 3);
+                if (rnd == 1)
+                {
+                    GameObject obj = Instantiate(GameController.instance.coinPrefab, linePoints[i], Quaternion.identity);
+                    obj.transform.tag = "para";
+                    obj.transform.parent = PlayerController.instance.paralarParenti.transform;
+                }
             }
         }
+		
 	}
 
 }
