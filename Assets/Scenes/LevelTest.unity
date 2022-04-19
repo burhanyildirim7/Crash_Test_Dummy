@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.47884, g: 0.8001845, b: 0.90072787, a: 1}
+  m_IndirectSpecularColor: {r: 0.4788496, g: 0.80017924, b: 0.8994595, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -489,9 +489,9 @@ Transform:
   - {fileID: 921852493}
   - {fileID: 674616639}
   - {fileID: 785041581}
+  - {fileID: 9125447826941567019}
   - {fileID: 413047252}
   - {fileID: 84509000}
-  - {fileID: 9125447826941567019}
   m_Father: {fileID: 0}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
@@ -548,6 +548,9 @@ MonoBehaviour:
   heightCostText: {fileID: 0}
   powerCostText: {fileID: 0}
   paraText: {fileID: 0}
+  bestDistanceText: {fileID: 0}
+  powerButton: {fileID: 0}
+  heightButton: {fileID: 0}
 --- !u!4 &955729543
 Transform:
   m_ObjectHideFlags: 0
@@ -696,11 +699,19 @@ MonoBehaviour:
   firlatmaAzaltma1: 2
   firlatmaAzaltma2: 4
   aracSpeed: 0
+  gucCarpani: 0
+  para: 0
   aracrRotSpeed: 0
   heightPlatform: {fileID: 0}
   carTarget: {fileID: 0}
-  para: 0
+  levelPara: 0
   vehicles: []
+  DummyAnim: {fileID: 0}
+  type: 0
+  firstCrash: 0
+  zeminTarget: {fileID: 0}
+  coinPrefab: {fileID: 0}
+  birdPrefab: {fileID: 0}
 --- !u!4 &1124119774
 Transform:
   m_ObjectHideFlags: 0
@@ -858,15 +869,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd91887c7e2fa48528efffd028291d62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  distanceTextZemin: {fileID: 0}
+  bestDistancneTextZemin: {fileID: 0}
+  distanceUiText: {fileID: 0}
+  bestDistance: 0
+  distanceTextTime: 0
   collectibleDegeri: 10
   xVarMi: 1
   collectibleVarMi: 1
   coinPrefab: {fileID: 0}
   engel: {fileID: 0}
+  isDistanceTime: 0
   playerAnimator: {fileID: 0}
   ragDollsRb: []
   cameraLookAtTarget: {fileID: 0}
   hips: {fileID: 0}
+  isForceTime: 0
+  isForceTime2: 0
+  isForceTime3: 0
+  zeminde: 0
+  havada: 0
+  paralarParenti: {fileID: 0}
+  birdPrefab: {fileID: 0}
+  onBoarding: {fileID: 0}
+  arac: {fileID: 0}
+  groundTextCanvas: {fileID: 0}
+  cizgi: {fileID: 0}
+  distancePanel: {fileID: 0}
+  bestDistancePanel: {fileID: 0}
+  kuslar: {fileID: 0}
+  tuyEfecti: {fileID: 0}
 --- !u!54 &1443049515
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1215,7 +1247,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 127825303309644050, guid: 370ec294d92224e459fc00a90b3ee101, type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 127825303309644050, guid: 370ec294d92224e459fc00a90b3ee101, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4467,7 +4499,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5891113413703429521, guid: d2d8ffd788ad2074c827532d586ef6e9, type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5891113413703429521, guid: d2d8ffd788ad2074c827532d586ef6e9, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4528,7 +4560,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4651235843307309413, guid: b863a243958ad66479b53bb61e8cc632, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4651235843307309413, guid: b863a243958ad66479b53bb61e8cc632, type: 3}
       propertyPath: m_LocalPosition.x
