@@ -11,8 +11,8 @@ public class ParaController : MonoBehaviour
 		{
 			Destroy(other.gameObject);
 			Instantiate(coinEfecti, transform.position, Quaternion.identity);
-			GameController.instance.para++;
-			GameController.instance.levelPara++;
+			GameController.instance.para+=10;
+			GameController.instance.levelPara+=15;
 			PlayerPrefs.SetInt("para", GameController.instance.para);
 			//UIController.instance.SetParaText();
 

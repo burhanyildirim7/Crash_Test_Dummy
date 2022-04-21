@@ -38,7 +38,7 @@ public class GameController : MonoBehaviour
 
 	void Start()
     {
-        //PlayerPrefs.DeleteAll();
+        PlayerPrefs.DeleteAll();
         //para = 250000;
         //PlayerPrefs.SetInt("para", para);
         //PlayerPrefs.SetInt("power", power);
@@ -59,6 +59,17 @@ public class GameController : MonoBehaviour
         
         //power = PlayerPrefs.GetInt("power");
         //height = PlayerPrefs.GetInt("height");
+
+        //if (power == 0)
+        //{
+        //    power = 1;
+        //    PlayerPrefs.SetInt("power",1);
+        //}
+        //if (height == 0)
+        //{
+        //    height = 1;
+        //    PlayerPrefs.SetInt("height", 1);
+        //}
         //para = PlayerPrefs.GetInt("para");
         //power = 15;
         //height = 15;

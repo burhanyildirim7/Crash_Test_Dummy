@@ -236,8 +236,7 @@ public class UIController : MonoBehaviour
 
 
     public void SetPowerAndLevelText()
-	{
-       
+	{     
         powerLevelText.text = "Level " + PlayerPrefs.GetInt("power").ToString();
         heightLevelText.text = "Level " + PlayerPrefs.GetInt("height").ToString();
         powerCostText.text = PlayerPrefs.GetInt("fiyatp").ToString();
