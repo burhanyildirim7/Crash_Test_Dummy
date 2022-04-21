@@ -10,29 +10,27 @@ public class PlayerController : MonoBehaviour
     public Text distanceTextZemin,bestDistancneTextZemin;
     public Text distanceUiText;
     [SerializeField] float bestDistance;
-    public bool distanceTextTime;
+    [HideInInspector]public bool distanceTextTime;
     public int collectibleDegeri;
     public bool xVarMi = true;
     public bool collectibleVarMi = true;
     [SerializeField]private GameObject coinPrefab;
     [SerializeField]private GameObject engel;
-    int status = 0;
-    bool canTap, isStatus1,isStatus2;
-    public bool isDistanceTime;
-    float tempY;
+    [HideInInspector] public bool canTap;
+    [HideInInspector] public bool isDistanceTime;
     public Animator playerAnimator;
     public List<Rigidbody> ragDollsRb = new();
     public GameObject cameraLookAtTarget,hips;
-    public bool isForceTime,isForceTime2,isForceTime3,zeminde,havada;
-    float lastForce = 2000;
-    float tempLastForce;
+    [HideInInspector] public bool zeminde,havada;
     public GameObject paralarParenti,birdPrefab,onBoarding;
     public GameObject arac;
     int atisSirasi; // 0 ise ilk extra fýrlatma  1 ise ikinci extra fýrlatma mümkündür
     public GameObject groundTextCanvas,cizgi,distancePanel,bestDistancePanel;
-    public GameObject kuslar;
+    public GameObject kuslar,coinCalculator;
     private Vector3 kuslarPozisyon;
     public GameObject tuyEfecti;
+    bool coinTime,isOnBoardingTime;
+    
     
 
     public static PlayerController instance;
@@ -56,99 +54,103 @@ public class PlayerController : MonoBehaviour
 	private void Update()
 	{
        
-        if (zeminde && Mathf.Abs(hips.GetComponent<Rigidbody>().velocity.z) <= .1f && isDistanceTime)
+        if (zeminde && Mathf.Abs(hips.GetComponent<Rigidbody>().velocity.z) <= .1f && isDistanceTime )
 		{
 			CalculateDistance();
             isDistanceTime = false;
             Time.timeScale = 1;
-            PlayerController.instance.onBoarding.SetActive(false);
+            onBoarding.SetActive(false);
         }
 		if (Input.GetMouseButtonDown(0))
 		{
 			if (havada)
 			{
-                if(atisSirasi == 0 && canTap)
+                if(atisSirasi == 0 && canTap && !zeminde)
 				{
-                    isForceTime = false;
-                    isForceTime2 = true;
-                    isForceTime3 = false;
+                    transform.DOKill();
+                    Jump2();
+                    isOnBoardingTime = false;
                     canTap = false;
                     atisSirasi++;
                     onBoarding.SetActive(false);
                     Time.timeScale = 1;
                     kuslar.SetActive(true);
-                    kuslar.transform.position = hips.transform.position + new Vector3(0,0,4);
+                    kuslar.transform.position = hips.transform.position + new Vector3(0,1,-4);
                     StartCoroutine(KuslarCarpti());
                     
 				}
-                else if(atisSirasi == 1 && canTap)
+                else if(atisSirasi == 1 && canTap && !zeminde)
 				{
-                    isForceTime = false;
-                    isForceTime2 = false;
-                    isForceTime3 = true;
+                    transform.DOKill();
+                    Jump3();
+                    isOnBoardingTime = false;
+                    kuslar.transform.DOKill();
+                    kuslar.SetActive(false);
+                    kuslar.SetActive(true);
+                    kuslar.transform.position = hips.transform.position + new Vector3(0, 1, -4);
+                    StartCoroutine(KuslarCarpti());
                     canTap = false;
                     atisSirasi++;
                     onBoarding.SetActive(false);
                     Time.timeScale = 1;
-                    kuslar.SetActive(true);
-                    kuslar.transform.position = hips.transform.position + new Vector3(0, 0, 4);
-                    StartCoroutine(KuslarCarpti());
+
                 }
 			}
         }
 
-        if (isForceTime)
-        {
-            StartCoroutine(TimeSlow());
-            CloseGravities();
-            lastForce = 2000;
-            isForceTime = false;
-            Debug.Log("forse 1");
-            foreach (Rigidbody rb in ragDollsRb) rb.velocity = Vector3.zero;
-            float power = (float)(GameController.instance.power + GameController.instance.height) / 2;
-            lastForce = lastForce * 8 + lastForce * power * GameController.instance.firlatmaForce; ;
-            Debug.Log("force " + lastForce);
-            tempLastForce = lastForce;
-            Trajectory.instance.UpdateTrajectory(new Vector3(0, .3f, 1) * lastForce, hips.GetComponent<Rigidbody>(), hips.transform.position,true);
-            hips.GetComponent<Rigidbody>().AddForce(new Vector3(0, .3f, 1) * lastForce);     
-        }
-        else if (isForceTime2)
-        {
-            isForceTime2 = false;
-            foreach (Rigidbody rb in ragDollsRb) rb.velocity = Vector3.zero;
-            float power = (float)(GameController.instance.power + GameController.instance.height) / 5;
-            lastForce = tempLastForce / 1.5f;
-            tempLastForce = lastForce;
-            Trajectory.instance.UpdateTrajectory(new Vector3(0, .3f, 1) * lastForce, hips.GetComponent<Rigidbody>(), hips.transform.position,false);
-            hips.GetComponent<Rigidbody>().AddForce(new Vector3(0, .3f, 1) * lastForce);
+        #region Control By Physics
+        //if (isForceTime)
+        //      {
+        //          //StartCoroutine(TimeSlow());
+        //          CloseGravities();
+        //          lastForce = 2000;
+        //          isForceTime = false;
+        //          Debug.Log("forse 1");
+        //          foreach (Rigidbody rb in ragDollsRb) rb.velocity = Vector3.zero;
+        //          float power = (float)(GameController.instance.power + GameController.instance.height) / 2;
+        //          lastForce = lastForce * 8 + lastForce * power * GameController.instance.firlatmaForce; ;
+        //          Debug.Log("force " + lastForce);
+        //          tempLastForce = lastForce;
+        //          Trajectory.instance.UpdateTrajectory(new Vector3(0, .3f, 1) * lastForce, hips.GetComponent<Rigidbody>(), hips.transform.position,true);
+        //          hips.GetComponent<Rigidbody>().AddForce(new Vector3(0, .3f, 1) * lastForce);     
+        //      }
+        //      else if (isForceTime2)
+        //      {
+        //          isForceTime2 = false;
+        //          foreach (Rigidbody rb in ragDollsRb) rb.velocity = Vector3.zero;
+        //          float power = (float)(GameController.instance.power + GameController.instance.height) / 5;
+        //          lastForce = tempLastForce / 1.5f;
+        //          tempLastForce = lastForce;
+        //          Trajectory.instance.UpdateTrajectory(new Vector3(0, .3f, 1) * lastForce, hips.GetComponent<Rigidbody>(), hips.transform.position,false);
+        //          hips.GetComponent<Rigidbody>().AddForce(new Vector3(0, .3f, 1) * lastForce);
 
-        }
-        else if (isForceTime3)
-        {
-            isForceTime3 = false;
-            foreach (Rigidbody rb in ragDollsRb) rb.velocity = Vector3.zero;
-            float power = (float)(GameController.instance.power + GameController.instance.height) / 5;
-            lastForce = tempLastForce / 1.5f;
-            tempLastForce = lastForce;
-            Trajectory.instance.UpdateTrajectory(new Vector3(0, .3f, 1) * lastForce, hips.GetComponent<Rigidbody>(), hips.transform.position,false);
-            hips.GetComponent<Rigidbody>().AddForce(new Vector3(0, .3f, 1) * lastForce);
+        //      }
+        //      else if (isForceTime3)
+        //      {
+        //          isForceTime3 = false;
+        //          foreach (Rigidbody rb in ragDollsRb) rb.velocity = Vector3.zero;
+        //          float power = (float)(GameController.instance.power + GameController.instance.height) / 5;
+        //          lastForce = tempLastForce / 1.5f;
+        //          tempLastForce = lastForce;
+        //          Trajectory.instance.UpdateTrajectory(new Vector3(0, .3f, 1) * lastForce, hips.GetComponent<Rigidbody>(), hips.transform.position,false);
+        //          hips.GetComponent<Rigidbody>().AddForce(new Vector3(0, .3f, 1) * lastForce);
 
-        }
-        if (hips.GetComponent<Rigidbody>().velocity.y < 0 && !zeminde)
-        {
-            Debug.Log("canTap true");
-            lastForce = 2000;
-            canTap = true;
-        }
-        if (hips.transform.position.y > 3 &&  hips.transform.position.y < 30 && hips.GetComponent<Rigidbody>().velocity.y < 0 )
-        {
-            if (atisSirasi < 2)
-            {
-                onBoarding.SetActive(true);
-                Time.timeScale = .5f;
-            }
-        }
-    }
+        //      }
+        #endregion
+
+        if (isOnBoardingTime && !zeminde)
+		{
+			if (atisSirasi < 2)
+			{
+                if(GameController.instance.power + GameController.instance.height < 4)
+				{
+                    onBoarding.SetActive(true);
+                    Time.timeScale = .4f;
+                }			
+                canTap = true;
+			}
+		}
+	}
 
 	private void LateUpdate()
 	{
@@ -160,28 +162,25 @@ public class PlayerController : MonoBehaviour
 	{
         for (int i = 0; i < 3; i++)
         {
-            Instantiate(tuyEfecti, hips.transform.position, Quaternion.identity);
+            GameObject tuy = Instantiate(tuyEfecti, hips.transform.position, Quaternion.identity);
+            tuy.transform.parent = transform;
         }
-        //kuslar.transform.DOLocalMove(new Vector3(6, 0, -6), 1).OnComplete(() => {
-        //    kuslar.SetActive(false);
-        //    kuslar.transform.position = kuslarPozisyon;
-        //});
-        float sayac = 0;
-        while (sayac <= 1)
+		kuslar.transform.DOMove(new Vector3(
+            20, 
+            30, 
+            hips.transform.position.z + 150 + (GameController.instance.power + GameController.instance.height) * 5), 5).OnComplete(() =>
 		{
-            //kuslar.transform.position = Vector3.Lerp(kuslar.transform.position,hips.transform.position, sayac);
-            sayac += .05f;
-            yield return new WaitForSeconds(0.02f);
-		}
+			kuslar.SetActive(false);
+			kuslar.transform.position = kuslarPozisyon;
+		});
+        yield return new WaitForSeconds(.1f);
 		
 	}
 
 	public IEnumerator TimeSlow()
     {
-        Time.timeScale = .1f;
-        yield return new WaitForSeconds(.1f);
-        Time.timeScale = 1;
-       
+        yield return new WaitForSeconds(.2f);
+        Time.timeScale = 1;       
     }
 
     /// <summary>
@@ -189,6 +188,7 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     public void StartingEvents()
     {
+        coinTime = true;
         atisSirasi = 0;
         canTap = false;
         UIController.instance.bestDistanceText.text = "";
@@ -199,15 +199,9 @@ public class PlayerController : MonoBehaviour
         GameController.instance.SetVehicleType();
         engel.GetComponent<Collider>().enabled = true;
         AracControl.instance.current = 0;
-        status = 0;
-        isStatus1 = isStatus2 = false;
         CloseColliders(); // titrememesi için bu silme bunu
+        CloseRagDolsRb();
         onBoarding.SetActive(false);
-		tempY = 0;
-        isForceTime = false;
-        isForceTime2 = false;
-        isForceTime3 = false;
-        lastForce = 2000;
         isDistanceTime = false;
         groundTextCanvas.transform.position = new Vector3(0, 0, -30);
         ClearParalarParenti();
@@ -215,9 +209,10 @@ public class PlayerController : MonoBehaviour
 
 	public void CalculateDistance()
 	{
+      
         UIController.instance.ActivateWinScreen();
         groundTextCanvas.transform.position = new Vector3(1.2f,10,hips.transform.position.z);
-        groundTextCanvas.transform.DOMove(new Vector3(1.2f, 2.2f, hips.transform.position.z), 1f).SetEase(Ease.OutBounce);
+        groundTextCanvas.transform.DOMove(new Vector3(1.2f, 3.2f, hips.transform.position.z), 1f).SetEase(Ease.OutBounce);
         bestDistancePanel.SetActive(false);
         distancePanel.SetActive(true);
         int distance = (int)hips.transform.position.z - (int)engel.transform.position.z;
@@ -228,7 +223,7 @@ public class PlayerController : MonoBehaviour
 		{
             bestDistance = distance;
             PlayerPrefs.SetInt("distance", distance);
-            cizgi.transform.position = new Vector3(0, 1.15F, hips.transform.position.z);
+            cizgi.transform.position = new Vector3(0, 2F, hips.transform.position.z);
             bestDistancneTextZemin.text = distance.ToString() + "m";
             bestDistancePanel.SetActive(true);
             distancePanel.SetActive(false);
@@ -254,263 +249,108 @@ public class PlayerController : MonoBehaviour
 	{
         bestDistance = PlayerPrefs.GetInt("distance");
         distanceUiText.text =  bestDistance.ToString() + "m";
-        cizgi.transform.position = new Vector3(0, 1.15F, engel.transform.position.z + bestDistance);
+        cizgi.transform.position = new Vector3(0, 2F, engel.transform.position.z + bestDistance);
     }
 
-	#region ESKI SISTEM 
-	public IEnumerator ThrowPlayer()
+
+    public void Jump1()
 	{
         OpenColliders();
+        // OpenRagDolsRb();
         onBoarding.SetActive(false);
-        StartCoroutine(CalculateCoins());
         playerAnimator.enabled = false;
-        float power = GameController.instance.power + GameController.instance.height;
-        float distance = 5 + power * GameController.instance.firlatmaForce;
-        float time = 0;
-        float aci = 0;
-        Vector3 pos = transform.position;
-        while (time < 1 && !isStatus1)
-		{
-            if (isStatus1) onBoarding.SetActive(false);
-            yield return new WaitForSeconds(.005f);
-            if (tempY > transform.position.y )
-            {
-                canTap = true;
-                if (power < 4) { 
-                    onBoarding.SetActive(true);
-                    Time.timeScale = .5f;
-                }
-            }
-            tempY = transform.position.y;
-            time += 1 / (distance*50);
-            if(aci < 180) aci = 180 *time;
-            if (power < 10) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (100 / power);
-            else if (power < 20) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (200 / power);
-            else if (power < 30) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (350 / power);
-            else if (power < 50) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (500 / power);
-            else if (power < 70) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (700 / power);
-            else if (power < 100) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1000 / power);
-            else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
-            else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
-            pos.z += .2f;
-            transform.position = pos;
-            if (isStatus1) onBoarding.SetActive(false);
-            DistanceTextUi();
-        }
-        if (!isStatus1)
-        {
-            canTap = false;
-            OpenRagDolsRb();
-            isForceTime = true;       
-        }    
+        float power = (float)GameController.instance.power + (float)GameController.instance.height;
+        Vector3 endPositon = new(0,1.4f,transform.position.z + power*20);
+        float jumpPower = 10f + power / 2f;
+        float time = .8f + power / 4;
+        transform.DOJump(endPositon,jumpPower,1,time).SetEase(Ease.Linear).OnComplete(()=> {
+            ApplyLastForce();
+        });
+        StartCoroutine(ActivateIsOnBoarding(time));
+        int rnd = Random.Range(0,175);
+        hips.transform.DORotate(Vector3.one * rnd, .05f);
     }
 
-    public IEnumerator Tap1()
-    {      
-        CloseRagDolsRb();
-        StopCoroutine(ThrowPlayer());
-        StartCoroutine(CalculateCoins2());
-        float power = GameController.instance.power + GameController.instance.height;
-        float distance = 3 + power / GameController.instance.firlatmaAzaltma1;
-        float time = 0;
-        float aci = 0;
-        Vector3 pos = transform.position;
-        onBoarding.SetActive(false);
-        yield return new WaitForSeconds(.02f);
-        tempY = 0;
-        while (time < 1 && !isStatus2)
-        {
-            if (isStatus2) onBoarding.SetActive(false);
-            yield return new WaitForSeconds(.005f);
-            canTap = false;
-            if (tempY > transform.position.y ) { 
-                canTap = true;
-                if (power < 4)
-                {
-                    onBoarding.SetActive(true);
-                    Time.timeScale = .5f;
-                }
-            }
-            tempY = transform.position.y;
-            time += 1 / (distance * 50);
-            if (aci < 180) aci = 180 * time;
-            if (power < 10) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (100 / power);
-            else if (power < 20) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (200 / power);
-            else if (power < 30) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (350 / power);
-            else if (power < 50) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (500 / power);
-            else if (power < 70) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (700 / power);
-            else if (power < 100) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1000 / power);
-            else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
-            else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
-            pos.z += .2f;
-            transform.position = pos;
-            if (isStatus2) onBoarding.SetActive(false);
-            DistanceTextUi();
-        }
-        if (!isStatus2)
-        {
-            canTap = false;
-            OpenRagDolsRb();
-            isForceTime = true;
-        }
-    }
-
-    public IEnumerator Tap2()
+    public void Jump2()
     {
-
-        CloseRagDolsRb();
-        StopCoroutine(Tap1());
-        StartCoroutine(CalculateCoins3());
-        float power = GameController.instance.power + GameController.instance.height;
-        float distance = 1 + power / GameController.instance.firlatmaAzaltma2;
-        float time = 0;
-        float aci = 0;
-        Vector3 pos = transform.position;
         onBoarding.SetActive(false);
-        while (time < 1 )
-        {
-            yield return new WaitForSeconds(.005f);
-            canTap = false;
-            if (tempY > transform.position.y)
-            {
-                canTap = true;
-			}
-            tempY = transform.position.y;
-            time += 1 / (distance * 50);
-            if (aci < 180) aci = 180 * time;
-            if (power < 10) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (100 / power);
-            else if (power < 20) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (200 / power);
-            else if (power < 30) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (350 / power);
-            else if (power < 50) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (500 / power);
-            else if (power < 70) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (700 / power);
-            else if (power < 100) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1000 / power);
-            else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
-            else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
-            pos.z += .2f;
-            transform.position = pos;
-            DistanceTextUi();
-        }
-        Time.timeScale = 1;
-        canTap = false;
+        float power = (float)GameController.instance.power + (float)GameController.instance.height;
+        power /= 1.2f;
+        Vector3 endPositon = new(0, 1.4f, transform.position.z + power * 20);
+        float jumpPower = 10f + power;
+        float time = .4f + power / 5;
+        transform.DOJump(endPositon, jumpPower, 1, time).SetEase(Ease.Linear).OnComplete(() => {
+            ApplyLastForce();
+        }); ;
+        StartCoroutine(ActivateIsOnBoarding(time));
+    }
+
+    public void Jump3()
+    {
+        onBoarding.SetActive(false);
+        float power = (float)GameController.instance.power + (float)GameController.instance.height;
+        power /= 1.4f;
+        Vector3 endPositon = new(0, 1.4f, transform.position.z + power * 20);
+        float jumpPower = 10f + power;
+        float time = .2f + power / 6;
+        transform.DOJump(endPositon, jumpPower, 1, time).SetEase(Ease.Linear).OnComplete(() => {
+            ApplyLastForce();
+        }); ;
+        StartCoroutine(ActivateIsOnBoarding(time));
+    }
+
+    void ApplyLastForce()
+	{
         OpenRagDolsRb();
-        isForceTime = true;
+        onBoarding.SetActive(false);
+        Time.timeScale = 1;
+        isOnBoardingTime = false;
+        canTap = false;
+        float force = GameController.instance.power + GameController.instance.height;
+        float time = force / 200;
+        force = Mathf.Lerp(15000,45000,time);
+        hips.GetComponent<Rigidbody>().AddForce(Vector3.forward*force);
+	}
 
-    }
+    public IEnumerator ActivateIsOnBoarding(float time)
+	{
+        yield return new WaitForSeconds(time/2);
+        isOnBoardingTime = true;
+	}
 
-    public IEnumerator CalculateCoins()
-    {
-        float power = GameController.instance.power + GameController.instance.height;
-        float distance = 5 + power * GameController.instance.firlatmaForce ;
-        float time = 0;
-        float aci = 0;
-        Vector3 pos = hips.transform.position; 
-        while (time < 1 )
-        {
-            time += 1 / (distance * 50);
-            if (aci < 180) aci = 180 * time;
-            if (power < 10) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (100 / power);
-            else if (power < 20) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (200 / power);
-            else if (power < 30) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (350 / power);
-            else if (power < 50) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (500 / power);
-            else if (power < 70) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (700 / power);
-            else if (power < 100) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1000 / power);
-            else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
-            else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
-            pos.z += .2f;
-            int rnd = Random.Range(0, 400);
-            if (rnd < 7)
-            {
-                GameObject coin = Instantiate(coinPrefab,pos, Quaternion.identity);
-                coin.transform.tag = "para";
-                coin.transform.parent = paralarParenti.transform;
-            }
-            else if (rnd == 8)
-            {
-                GameObject bird = Instantiate(birdPrefab, pos, Quaternion.identity);
-                bird.transform.tag = "kus";
-                bird.transform.parent = paralarParenti.transform;
-            }
-        }
-        yield return new WaitForSeconds(.001f);
-    }
+    public void CalculateCoins1()
+	{
 
-    public IEnumerator CalculateCoins2()
-    {
-        float power = GameController.instance.power + GameController.instance.height;
-        float distance = 3 + power / GameController.instance.firlatmaAzaltma1 ;
-        float time = 0;
-        float aci = 0;
-        Vector3 pos = hips.transform.position;
-        while (time < 1)
-        {
-            time += 1 / (distance * 50);
-            aci = 180 * time;
-            if (power < 10) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (100 / power);
-            else if (power < 20) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (200 / power);
-            else if (power < 30) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (350 / power);
-            else if (power < 50) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (500 / power);
-            else if (power < 70) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (700 / power);
-            else if (power < 100) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1000 / power);
-            else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
-            else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
-            pos.z += .2f;
-            int rnd = Random.Range(0, 400);
-            if (rnd < 7)
-            {
-                GameObject coin = Instantiate(coinPrefab, pos, Quaternion.identity);
-                coin.transform.tag = "para";
-                coin.transform.parent = paralarParenti.transform;
-            }
-            else if (rnd == 8)
-            {
-                GameObject bird = Instantiate(birdPrefab, pos, Quaternion.identity);
-                bird.transform.tag = "kus";
-                bird.transform.parent = paralarParenti.transform;
-            }
+        // zamaný ve yeri lerp ile hesaplamayý düþün
+        float power = (float)GameController.instance.power + (float)GameController.instance.height;
+        Vector3 endPosition = new(0, 1.4f, engel.transform.position.z + power * 20);
+        float jumpPower = 10f + power / 2f;
+        float time = .8f + power / 4;
+        coinCalculator.transform.position = engel.transform.position + new Vector3(0,1.2f,0);
+        coinCalculator.transform.DOJump(endPosition,jumpPower,1,time).SetEase(Ease.Linear).OnComplete(()=> {
+            coinTime = false;
+        });
+        StartCoroutine(CreateCoins());
+        
+	}
 
-        }
-        yield return new WaitForSeconds(.001f);
-    }
-
-    public IEnumerator CalculateCoins3()
-    {
-        float power = GameController.instance.power + GameController.instance.height;
-        float distance = 1 + power / GameController.instance.firlatmaAzaltma2;
-        float time = 0;
-        float aci = 0;
-        Vector3 pos = hips.transform.position;
-        while (time < 1)
-        {
-            time += 1 / (distance * 50);
-            aci = 180 * time;
-            if (power < 10) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (100 / power);
-            else if (power < 20) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (200 / power);
-            else if (power < 30) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (350 / power);
-            else if (power < 50) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (500 / power);
-            else if (power < 70) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (700 / power);
-            else if (power < 100) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1000 / power);
-            else if (power < 150) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1250 / power);
-            else if (power < 200) pos.y += Mathf.Cos(Mathf.Deg2Rad * aci) / (1500 / power);
-            pos.z += .2f;
-            int rnd = Random.Range(0, 400);
-            if (rnd < 7)
-            {
-                GameObject coin = Instantiate(coinPrefab, pos, Quaternion.identity);
-                coin.transform.tag = "para";
-                coin.transform.parent = paralarParenti.transform;
-            }
-            else if (rnd == 8)
+    IEnumerator CreateCoins()
+	{
+        while(coinTime)
+		{
+            int rnd = Random.Range(0,35);
+            if(GameController.instance.power + GameController.instance.height < 10) rnd = Random.Range(0, 25);
+            if (rnd == 1)
 			{
-                GameObject bird = Instantiate(birdPrefab, pos, Quaternion.identity);
-                bird.transform.tag = "kus";
-                bird.transform.parent = paralarParenti.transform;
+                GameObject coin = Instantiate(coinPrefab, coinCalculator.transform.position, Quaternion.identity);
+                coin.transform.tag = "para";
+                coin.transform.parent = paralarParenti.transform;
             }
             
+            yield return new WaitForEndOfFrame();
         }
-        yield return new WaitForSeconds(.001f);
+       
     }
-	#endregion
-
 
 	public void ClearParalarParenti()
 	{
@@ -562,8 +402,7 @@ public class PlayerController : MonoBehaviour
         onBoarding.SetActive(false);
 		hips.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
 		hips.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePositionX;
-		ClearParalarParenti();
-        foreach(Rigidbody rb in ragDollsRb)
+		foreach (Rigidbody rb in ragDollsRb)
 		{
             rb.useGravity = true;
 		}

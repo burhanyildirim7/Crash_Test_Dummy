@@ -11,20 +11,12 @@ public class GameController : MonoBehaviour
     public int power;
     [Header("Rampa Yüksekligi - Height")]
     public int height;
-    [Header("Ilk Firlatma Azaltma Katsayýsý")]
-    public float firlatmaForce = 1;
- 
-    [Header("Ikinci Firlatma Azaltma Katsayýsý")]
-    public float firlatmaAzaltma1 = 2;
-    [Header("Ucuncu Firlatma Azaltma Katsayýsý")]
-    public float firlatmaAzaltma2 = 4;
-    [Header("Arabanýn doðrusal ve dairesel hýzý")]
+    [Header("Arabanýn doðrusal ve dairesel hýzýný etkileyen carpan")]
     public float aracSpeed;
-    [Header("Guc carpani.. addforce degerini etkiler")]
-    public float gucCarpani;
+    public float aracrRotSpeed;
     [Header("Para")]
     public int para;
-    public float aracrRotSpeed;
+    
     [Header("Diger Degiskenler")]
     public GameObject heightPlatform;
     public Transform carTarget;
@@ -70,7 +62,6 @@ public class GameController : MonoBehaviour
         //para = PlayerPrefs.GetInt("para");
         //power = 15;
         //height = 15;
-        Debug.Log(height);
         isContinue = false;
         SetHeightPlatform();
         UIController.instance.SetPowerAndLevelText();
@@ -84,16 +75,10 @@ public class GameController : MonoBehaviour
             para -= fiyatPower;
             power++;
             SetVehicleType();
-            Debug.Log("ilk " + para);
-            Debug.Log("ilk " + fiyatPower);
-            Debug.Log("ilk " + power);
             fiyatPower = 100 + (power * power * 4);
             PlayerPrefs.SetInt("para", para);
             PlayerPrefs.SetInt("fiyatp", fiyatPower);
             PlayerPrefs.SetInt("power", power);
-            Debug.Log("son " + para);
-            Debug.Log("son " + fiyatPower);
-            Debug.Log("son " + power);
         }
         UIController.instance.SetPowerAndLevelText();
         UIController.instance.ControlButtonsActivate();
@@ -145,7 +130,6 @@ public class GameController : MonoBehaviour
             DummyAnim.SetTrigger("keko");
         }
         else if (type >= 8) DummyAnim.SetTrigger("koltuk");
-        Debug.Log("vehicle type"  + type);
         if (type == 0) PlayerController.instance.transform.localPosition = new Vector3(0, .5f, .49f);
         else if (type < 4) PlayerController.instance.transform.localPosition = new Vector3(0, .66f, .49f);
         else if (type == 4) PlayerController.instance.transform.localPosition = new Vector3(0, 0f, .49f);

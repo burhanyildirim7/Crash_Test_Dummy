@@ -17,11 +17,6 @@ public class ParaController : MonoBehaviour
 			//UIController.instance.SetParaText();
 
 		}
-		else if (other.CompareTag("kus"))
-		{
-			Instantiate(tuyEfecti, transform.position, Quaternion.identity);
-			Destroy(other.gameObject);
-		}
 
 	}
 
@@ -29,19 +24,27 @@ public class ParaController : MonoBehaviour
 	{
 		if (collision.transform.CompareTag("zemin") && GameController.instance.firstCrash)
 		{
-			GameController.instance.firstCrash = false;
-		
+			GameController.instance.firstCrash = false;	
 			AracControl.instance.isAracActive = false;
-			PlayerController.instance.isForceTime2 = false;
 			PlayerController.instance.zeminde = true;		
-			PlayerController.instance.isDistanceTime = true;
+			PlayerController.instance.canTap = false;
 			PlayerController.instance.OpenGravities();
+			Time.timeScale = 1;
+			PlayerController.instance.onBoarding.SetActive(false);
+			StartCoroutine(ActivateDistanceTime());
 		}
 		if (collision.transform.CompareTag("zemin"))
 		{
 			Time.timeScale = 1;
 			PlayerController.instance.onBoarding.SetActive(false);
+			PlayerController.instance.canTap= false;
 		}
 
+	}
+
+	IEnumerator ActivateDistanceTime()
+	{
+		yield return new WaitForSeconds(1f);
+		PlayerController.instance.isDistanceTime = true;
 	}
 }

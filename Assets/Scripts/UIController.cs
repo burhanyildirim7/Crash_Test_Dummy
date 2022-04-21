@@ -54,6 +54,7 @@ public class UIController : MonoBehaviour
         AracControl.instance.isAracActive = true;
         TapToStartPanel.SetActive(false);
         GameController.instance.PreStartingEvents();
+        PlayerController.instance.CalculateCoins1();
     }
 
     // RESTART TUSUNA BASILDISINDA  --- LOOSE EKRANINDA

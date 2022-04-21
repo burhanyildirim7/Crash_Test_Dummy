@@ -67,6 +67,7 @@ public class AracControl : MonoBehaviour
 	{
 		if (other.CompareTag("engel"))
 		{
+            StartCoroutine(PlayerController.instance.TimeSlow());
             cmVcam.GetCinemachineComponent<CinemachineTransposer>().m_XDamping = 0;
             cmVcam.GetCinemachineComponent<CinemachineTransposer>().m_YDamping = 0;
             cmVcam.GetCinemachineComponent<CinemachineTransposer>().m_ZDamping = 0;
@@ -75,14 +76,13 @@ public class AracControl : MonoBehaviour
             other.GetComponent<Collider>().enabled = false;
             PlayerController.instance.transform.parent = null;
             PlayerController.instance.playerAnimator.enabled = false;
-            //PlayerController.instance.playerAnimator.SetTrigger("fly");
-            //StartCoroutine(OpenRagdols());
-            PlayerController.instance.OpenRagDolsRb();
             PlayerController.instance.OpenColliders();
-            PlayerController.instance.isForceTime = true;
+            //PlayerController.instance.isForceTime = true;
             PlayerController.instance.zeminde = false;
             PlayerController.instance.havada = true;
             PlayerController.instance.distanceTextTime = true;
+            //StartCoroutine( PlayerController.instance.ThrowPlayer());
+            PlayerController.instance.Jump1();
             distanceTravelled = 0;
             if(GameController.instance.power < 32)Instantiate(Explossions[0], other.transform.position + new Vector3(0,2,0), Quaternion.identity);
             else Instantiate(Explossions[1], other.transform.position + new Vector3(0,2,1), Quaternion.identity);
@@ -92,11 +92,16 @@ public class AracControl : MonoBehaviour
                 for (int i = 0; i < kirikCamlar.transform.childCount; i++)
                 {
                     Vector3 forcePower = new(Random.Range(-10, 10), Random.Range(0, 20), Random.Range(10, 30));
-                    kirikCamlar.transform.GetChild(i).GetComponent<Rigidbody>().AddForce(forcePower * 100);
+                    kirikCamlar.transform.GetChild(i).GetComponent<Rigidbody>().AddForce(forcePower * 300);
                 }
                 DestroyMe(kirikCamlar);
             }
             
+		}
+        else if (other.CompareTag("timeslow"))
+		{
+            Time.timeScale = .4f;
+           
 		}
 	}
 

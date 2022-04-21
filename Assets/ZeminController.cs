@@ -16,8 +16,11 @@ public class ZeminController : MonoBehaviour
 	}
 	private void OnCollisionEnter(Collision collision)
 	{
+		
 		if (collision.transform.CompareTag("ragdolkemik") && collisionCount < 10)
 		{
+			PlayerController.instance.canTap = false;
+			Time.timeScale = 1;
 			Instantiate(tozPrefab, collision.transform.position, Quaternion.identity);
 			collisionCount++;
 		}

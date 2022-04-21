@@ -15,6 +15,7 @@ TagManager:
   - kus
   - zemin
   - teker
+  - timeslow
   layers:
   - Default
   - TransparentFX
