@@ -9,14 +9,14 @@ public class GameController : MonoBehaviour
     [HideInInspector] public bool isContinue;  // ayrintilar icin beni oku 19. satirdan itibaren bak
     [Header("Arac gucu - Power")]
     public int power;
-    [Header("Rampa Yüksekligi - Height")]
+    [Header("Rampa Y?ksekligi - Height")]
     public int height;
-    [Header("Arabanýn doðrusal ve dairesel hýzýný etkileyen carpan")]
+    [Header("Araban?n do?rusal ve dairesel h?z?n? etkileyen carpan")]
     public float aracSpeed;
     public float aracrRotSpeed;
     [Header("Para")]
     public int para;
-    
+
     [Header("Diger Degiskenler")]
     public GameObject heightPlatform;
     public Transform carTarget;
@@ -24,56 +24,56 @@ public class GameController : MonoBehaviour
     public List<GameObject> vehicles = new();
     public Animator DummyAnim;
     public int type;
-    [HideInInspector]public bool firstCrash;
+    [HideInInspector] public bool firstCrash;
     public GameObject zeminTarget;
     public GameObject coinPrefab, birdPrefab;
-    int fiyatPower,fiyatHeight;
+    int fiyatPower, fiyatHeight;
 
 
     private void Awake()
-	{
+    {
         if (instance == null) instance = this;
         else Destroy(this);
-	}
+    }
 
-	void Start()
+    void Start()
     {
-       // PlayerPrefs.DeleteAll();
+        // PlayerPrefs.DeleteAll();
         //para = 250000;
         //PlayerPrefs.SetInt("para", para);
         //PlayerPrefs.SetInt("power", power);
         //PlayerPrefs.SetInt("height", height);
         fiyatPower = PlayerPrefs.GetInt("fiyatp");
         fiyatHeight = PlayerPrefs.GetInt("fiyath");
-        if(fiyatPower == 0)
-		{
-            fiyatPower = 100;
-            PlayerPrefs.SetInt("fiyatp",100);
-		}
+        if (fiyatPower == 0)
+        {
+            fiyatPower = 50;
+            PlayerPrefs.SetInt("fiyatp", 50);
+        }
         if (fiyatHeight == 0)
         {
-            fiyatHeight = 100;
-            PlayerPrefs.SetInt("fiyath", 100);
+            fiyatHeight = 50;
+            PlayerPrefs.SetInt("fiyath", 50);
         }
 
 
-		power = PlayerPrefs.GetInt("power");
-		height = PlayerPrefs.GetInt("height");
+        power = PlayerPrefs.GetInt("power");
+        height = PlayerPrefs.GetInt("height");
 
-		if (power == 0)
-		{
-			power = 1;
-			PlayerPrefs.SetInt("power", 1);
-		}
-		if (height == 0)
-		{
-			height = 1;
-			PlayerPrefs.SetInt("height", 1);
-		}
-		para = PlayerPrefs.GetInt("para");
-		//power = 15;
-		//height = 15;
-		isContinue = false;
+        if (power == 0)
+        {
+            power = 1;
+            PlayerPrefs.SetInt("power", 1);
+        }
+        if (height == 0)
+        {
+            height = 1;
+            PlayerPrefs.SetInt("height", 1);
+        }
+        para = PlayerPrefs.GetInt("para");
+        //power = 15;
+        //height = 15;
+        isContinue = false;
         SetHeightPlatform();
         UIController.instance.SetPowerAndLevelText();
         SetVehicleType();
@@ -82,9 +82,9 @@ public class GameController : MonoBehaviour
     }
 
     public void IncreasePower()
-	{
-        if(para >= fiyatPower)
-		{
+    {
+        if (para >= fiyatPower)
+        {
             para -= fiyatPower;
             power++;
             SetVehicleType();
@@ -95,51 +95,51 @@ public class GameController : MonoBehaviour
         }
         UIController.instance.SetPowerAndLevelText();
         UIController.instance.ControlButtonsActivate();
-	}
+    }
 
     public void IncreaseHeight()
-	{
+    {
         if (para >= fiyatHeight)
         {
-           
+
             para -= fiyatHeight;
             height++;
             SetVehicleType();
             SetHeightPlatform();
-            fiyatHeight = 100 + (height * height * 4); 
+            fiyatHeight = 100 + (height * height * 4);
             PlayerPrefs.SetInt("fiyath", fiyatHeight);
             PlayerPrefs.SetInt("para", para);
             PlayerPrefs.SetInt("height", height);
-            
+
         }
         UIController.instance.SetPowerAndLevelText();
         UIController.instance.ControlButtonsActivate();
     }
 
     public void SetHeightPlatform()
-	{
+    {
         float y = (16f / 100f) * height;
         float z = (-11f / 100f) * height;
-       
+
         heightPlatform.transform.position = new Vector3(0, 2, 0) + new Vector3(0, y, z);
         AracControl.instance.UpdateRoad();
         AracControl.instance.transform.position = carTarget.position;
-		AracControl.instance.transform.rotation = carTarget.rotation;
-	}
+        AracControl.instance.transform.rotation = carTarget.rotation;
+    }
 
 
     public void SetVehicleType()
-	{
-        type = (int) power / 4;
-        foreach(GameObject vehicle in vehicles)
-		{
+    {
+        type = (int)power / 4;
+        foreach (GameObject vehicle in vehicles)
+        {
             vehicle.SetActive(false);
-		}
-        if (power > 92) type = 23; 
+        }
+        if (power > 92) type = 23;
         vehicles[type].SetActive(true);
 
-        if (type > 3 && type < 8) 
-        { 
+        if (type > 3 && type < 8)
+        {
             DummyAnim.SetTrigger("keko");
         }
         else if (type >= 8) DummyAnim.SetTrigger("koltuk");
@@ -169,18 +169,18 @@ public class GameController : MonoBehaviour
         }
 
 
-        
+
     }
 
 
     public void SetAracSpeedAndRotate()
-	{
+    {
         int level = power + height;
         aracSpeed = aracrRotSpeed = 12 + level * .2f;
-	}
+    }
 
     public void PreStartingEvents()
-	{
+    {
         AracControl.instance.cmVcam.GetCinemachineComponent<CinemachineTransposer>().m_XDamping = 2;
         AracControl.instance.cmVcam.GetCinemachineComponent<CinemachineTransposer>().m_YDamping = 2;
         AracControl.instance.cmVcam.GetCinemachineComponent<CinemachineTransposer>().m_ZDamping = 2;
