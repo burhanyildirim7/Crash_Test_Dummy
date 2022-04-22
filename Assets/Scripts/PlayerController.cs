@@ -351,7 +351,7 @@ public class PlayerController : MonoBehaviour
         while(coinTime)
 		{
             int rnd = Random.Range(0,18);
-            //if(GameController.instance.power + GameController.instance.height < 10) rnd = Random.Range(0, 25);
+            if(GameController.instance.power + GameController.instance.height < 10) rnd = Random.Range(0, 12);
             if (rnd == 1)
 			{
                 GameObject coin = Instantiate(coinPrefab, coinCalculator.transform.position, Quaternion.identity);
