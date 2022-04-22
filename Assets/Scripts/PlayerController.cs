@@ -156,6 +156,10 @@ public class PlayerController : MonoBehaviour
         {
             DistanceTextUi();
         }
+        else
+        {
+            distanceUiText.text = "";
+        }
     }
 
     private void LateUpdate()
@@ -222,7 +226,7 @@ public class PlayerController : MonoBehaviour
         bestDistancePanel.SetActive(false);
         distancePanel.SetActive(true);
         int distance = (int)hips.transform.position.z - (int)engel.transform.position.z;
-        distanceTextZemin.text = distance.ToString() + "m";
+        distanceTextZemin.text = distance.ToString() + " m";
         //distanceUiText.text = distance.ToString() + "m";
         bestDistance = PlayerPrefs.GetInt("distance");
         if (distance > bestDistance)
@@ -230,10 +234,11 @@ public class PlayerController : MonoBehaviour
             bestDistance = distance;
             PlayerPrefs.SetInt("distance", distance);
             cizgi.transform.position = new Vector3(0, 2F, hips.transform.position.z);
-            bestDistancneTextZemin.text = distance.ToString() + "m";
+            bestDistancneTextZemin.text = distance.ToString() + " m";
             bestDistancePanel.SetActive(true);
             distancePanel.SetActive(false);
-            UIController.instance.bestDistanceText.text = "Best Distance : " + distance.ToString();
+            //UIController.instance.bestDistanceText.text = "Best Distance : " + distance.ToString();
+            UIController.instance.bestDistanceText.text = " ";
         }
 
     }
@@ -273,6 +278,8 @@ public class PlayerController : MonoBehaviour
 
     public void Jump1()
     {
+        MoreMountains.NiceVibrations.MMVibrationManager.Haptic(MoreMountains.NiceVibrations.HapticTypes.MediumImpact);
+
         OpenColliders();
         // OpenRagDolsRb();
         onBoarding.SetActive(false);
@@ -297,6 +304,8 @@ public class PlayerController : MonoBehaviour
 
     public void Jump2()
     {
+        MoreMountains.NiceVibrations.MMVibrationManager.Haptic(MoreMountains.NiceVibrations.HapticTypes.MediumImpact);
+
         onBoarding.SetActive(false);
         float power = (float)GameController.instance.power + (float)GameController.instance.height;
         power /= 1.2f;
@@ -314,6 +323,8 @@ public class PlayerController : MonoBehaviour
 
     public void Jump3()
     {
+        MoreMountains.NiceVibrations.MMVibrationManager.Haptic(MoreMountains.NiceVibrations.HapticTypes.MediumImpact);
+
         onBoarding.SetActive(false);
         float power = (float)GameController.instance.power + (float)GameController.instance.height;
         power /= 1.4f;
