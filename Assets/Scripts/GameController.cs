@@ -176,7 +176,7 @@ public class GameController : MonoBehaviour
     public void SetAracSpeedAndRotate()
     {
         int level = power + height;
-        aracSpeed = aracrRotSpeed = 12 + level * .2f;
+        aracSpeed = aracrRotSpeed = 12 + level * .5f;
     }
 
     public void PreStartingEvents()
