@@ -26,7 +26,7 @@ public class GameController : MonoBehaviour
     public int type;
     [HideInInspector] public bool firstCrash;
     public GameObject zeminTarget;
-    public GameObject coinPrefab, birdPrefab,parlamaPrefab;
+    public GameObject coinPrefab, birdPrefab, parlamaPrefab;
     int fiyatPower, fiyatHeight;
     public float yakit;
 
@@ -39,12 +39,12 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
-         PlayerPrefs.DeleteAll();
+        //PlayerPrefs.DeleteAll();
         //para = 250000;
-  //      PlayerPrefs.SetInt("para", para);
-		//PlayerPrefs.SetInt("power", power);
-		//PlayerPrefs.SetInt("height", height);
-		fiyatPower = PlayerPrefs.GetInt("fiyatp");
+        //      PlayerPrefs.SetInt("para", para);
+        //PlayerPrefs.SetInt("power", power);
+        //PlayerPrefs.SetInt("height", height);
+        fiyatPower = PlayerPrefs.GetInt("fiyatp");
         fiyatHeight = PlayerPrefs.GetInt("fiyath");
         if (fiyatPower == 0)
         {
@@ -58,9 +58,9 @@ public class GameController : MonoBehaviour
         }
 
 
-		power = PlayerPrefs.GetInt("power");
-		height = PlayerPrefs.GetInt("height");
-		yakit = PlayerPrefs.GetFloat("yakit");
+        power = PlayerPrefs.GetInt("power");
+        height = PlayerPrefs.GetInt("height");
+        yakit = PlayerPrefs.GetFloat("yakit");
 
         if (power == 0)
         {
@@ -72,8 +72,8 @@ public class GameController : MonoBehaviour
             height = 1;
             PlayerPrefs.SetInt("height", 1);
         }
-        if(yakit == 0)
-		{
+        if (yakit == 0)
+        {
             Debug.Log("yakit" + yakit);
             yakit = 10;
             PlayerPrefs.SetFloat("yakit", 10);
@@ -100,10 +100,10 @@ public class GameController : MonoBehaviour
 
             para -= fiyatPower;
             power++;
-            if(power %2 == 0 && power < 44)
-			{
-                Instantiate(parlamaPrefab,AracControl.instance.transform.position + new Vector3(0,3,0),Quaternion.identity);
-			}
+            if (power % 2 == 0 && power < 44)
+            {
+                Instantiate(parlamaPrefab, AracControl.instance.transform.position + new Vector3(0, 3, 0), Quaternion.identity);
+            }
             SetVehicleType();
             fiyatPower = 100 + (power * power * 4);
             PlayerPrefs.SetInt("para", para);
@@ -119,7 +119,7 @@ public class GameController : MonoBehaviour
     {
         if (para >= fiyatHeight)
         {
-            
+
             para -= fiyatHeight;
             height++;
             SetVehicleType();
