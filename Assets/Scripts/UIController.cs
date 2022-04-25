@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using ElephantSDK;
+
 
 public class UIController : MonoBehaviour
 {
@@ -12,10 +14,10 @@ public class UIController : MonoBehaviour
     public Text gamePlayScoreText, winScreenScoreText, levelNoText, tapToStartScoreText, totalElmasText;
     public Animator ScoreTextAnim;
     public TextMeshProUGUI heightLevelText, powerLevelText, heightCostText, powerCostText;
-    public Text paraText,bestDistanceText;
+    public Text paraText, bestDistanceText;
     public Button powerButton, heightButton;
 
-
+    private int _sdkIcinLevel;
 
     // singleton yapisi burada kuruluyor.
     private void Awake()
@@ -30,6 +32,20 @@ public class UIController : MonoBehaviour
         bestDistanceText.text = " ";
         SetPowerAndLevelText();
         ControlButtonsActivate();
+
+        _sdkIcinLevel = PlayerPrefs.GetInt("SDKIcinLevel");
+
+        if (_sdkIcinLevel == 0)
+        {
+            _sdkIcinLevel = 1;
+            PlayerPrefs.SetInt("SDKIcinLevel", _sdkIcinLevel);
+        }
+        else
+        {
+
+        }
+
+        Elephant.LevelStarted(_sdkIcinLevel);
     }
 
     // Oyun ilk acildiginda calisacak olan ui fonksiyonu. 
@@ -71,6 +87,9 @@ public class UIController : MonoBehaviour
     // NEXT LEVEL TUSUNA BASILDIGINDA... WIN EKRANINDAKI BUTON
     public void NextLevelButtonClick()
     {
+        _sdkIcinLevel++;
+        PlayerPrefs.SetInt("SDKIcinLevel", _sdkIcinLevel);
+        Elephant.LevelStarted(_sdkIcinLevel);
         SetTapToStartScoreText();
         TapToStartPanel.SetActive(true);
         WinPanel.SetActive(false);
@@ -120,6 +139,9 @@ public class UIController : MonoBehaviour
     /// </summary>
     public void ActivateWinScreen()
     {
+        _sdkIcinLevel = PlayerPrefs.GetInt("SDKIcinLevel");
+        Elephant.LevelCompleted(_sdkIcinLevel);
+
         GamePanel.SetActive(false);
         StartCoroutine(WinScreenDelay());
     }
@@ -236,39 +258,39 @@ public class UIController : MonoBehaviour
 
 
     public void SetPowerAndLevelText()
-	{     
+    {
         powerLevelText.text = "Level " + PlayerPrefs.GetInt("power").ToString();
         heightLevelText.text = "Level " + PlayerPrefs.GetInt("height").ToString();
         powerCostText.text = PlayerPrefs.GetInt("fiyatp").ToString();
         heightCostText.text = PlayerPrefs.GetInt("fiyath").ToString();
         SetParaText();
-	}
+    }
 
     public void PowerButtonClick()
-	{
+    {
         GameController.instance.IncreasePower();
-	}
+    }
 
     public void HeightButtonClick()
-	{
+    {
         GameController.instance.IncreaseHeight();
-	}
+    }
 
     public void SetParaText()
-	{
+    {
         paraText.text = PlayerPrefs.GetInt("para").ToString();
-	}
+    }
 
     public void ControlButtonsActivate()
-	{
-        if (PlayerPrefs.GetInt("para")>= PlayerPrefs.GetInt("fiyatp"))
-		{
+    {
+        if (PlayerPrefs.GetInt("para") >= PlayerPrefs.GetInt("fiyatp"))
+        {
             powerButton.interactable = true;
-		}
+        }
         else
-		{
+        {
             powerButton.interactable = false;
-		}
+        }
 
         if (PlayerPrefs.GetInt("para") >= PlayerPrefs.GetInt("fiyath"))
         {
