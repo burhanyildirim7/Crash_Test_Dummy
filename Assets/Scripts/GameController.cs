@@ -26,8 +26,9 @@ public class GameController : MonoBehaviour
     public int type;
     [HideInInspector] public bool firstCrash;
     public GameObject zeminTarget;
-    public GameObject coinPrefab, birdPrefab;
+    public GameObject coinPrefab, birdPrefab,parlamaPrefab;
     int fiyatPower, fiyatHeight;
+    public float yakit;
 
 
     private void Awake()
@@ -38,9 +39,9 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
-        // PlayerPrefs.DeleteAll();
-        //para = 250000;
-        //PlayerPrefs.SetInt("para", para);
+         //PlayerPrefs.DeleteAll();
+        para = 250000;
+        PlayerPrefs.SetInt("para", para);
         //PlayerPrefs.SetInt("power", power);
         //PlayerPrefs.SetInt("height", height);
         fiyatPower = PlayerPrefs.GetInt("fiyatp");
@@ -57,8 +58,9 @@ public class GameController : MonoBehaviour
         }
 
 
-        power = PlayerPrefs.GetInt("power");
-        height = PlayerPrefs.GetInt("height");
+        //power = PlayerPrefs.GetInt("power");
+        //height = PlayerPrefs.GetInt("height");
+        yakit = PlayerPrefs.GetFloat("yakit");
 
         if (power == 0)
         {
@@ -69,6 +71,13 @@ public class GameController : MonoBehaviour
         {
             height = 1;
             PlayerPrefs.SetInt("height", 1);
+        }
+        if(yakit == 0)
+		{
+            Debug.Log("yakit" + yakit);
+            yakit = 10;
+            PlayerPrefs.SetFloat("yakit", 10);
+            Debug.Log("yakit" + yakit);
         }
         para = PlayerPrefs.GetInt("para");
         //power = 15;
@@ -85,8 +94,16 @@ public class GameController : MonoBehaviour
     {
         if (para >= fiyatPower)
         {
+            yakit += .5f;
+            AracControl.instance.anlikYakit = yakit;
+            PlayerPrefs.SetFloat("yakit", yakit);
+
             para -= fiyatPower;
             power++;
+            if(power %2 == 0 && power < 44)
+			{
+                Instantiate(parlamaPrefab,AracControl.instance.transform.position + new Vector3(0,3,0),Quaternion.identity);
+			}
             SetVehicleType();
             fiyatPower = 100 + (power * power * 4);
             PlayerPrefs.SetInt("para", para);
@@ -101,7 +118,7 @@ public class GameController : MonoBehaviour
     {
         if (para >= fiyatHeight)
         {
-
+            
             para -= fiyatHeight;
             height++;
             SetVehicleType();
@@ -121,7 +138,7 @@ public class GameController : MonoBehaviour
         float y = (16f / 100f) * height;
         float z = (-11f / 100f) * height;
 
-        heightPlatform.transform.position = new Vector3(0, 2, 0) + new Vector3(0, y, z);
+        heightPlatform.transform.position = new Vector3(0, 5.2f, -2.2f) + new Vector3(0, y, z);
         AracControl.instance.UpdateRoad();
         AracControl.instance.transform.position = carTarget.position;
         AracControl.instance.transform.rotation = carTarget.rotation;
@@ -130,12 +147,16 @@ public class GameController : MonoBehaviour
 
     public void SetVehicleType()
     {
-        type = (int)power / 4;
+        type = (int)power / 2;
+
+
         foreach (GameObject vehicle in vehicles)
         {
             vehicle.SetActive(false);
         }
-        if (power > 92) type = 23;
+
+
+        if (power > 44) type = 23;
         vehicles[type].SetActive(true);
 
         if (type > 3 && type < 8)
@@ -143,6 +164,8 @@ public class GameController : MonoBehaviour
             DummyAnim.SetTrigger("keko");
         }
         else if (type >= 8) DummyAnim.SetTrigger("koltuk");
+
+
         if (type == 0) PlayerController.instance.transform.localPosition = new Vector3(0, .5f, .49f);
         else if (type < 4) PlayerController.instance.transform.localPosition = new Vector3(0, .66f, .49f);
         else if (type == 4) PlayerController.instance.transform.localPosition = new Vector3(0, 0f, .49f);
@@ -185,6 +208,7 @@ public class GameController : MonoBehaviour
         AracControl.instance.cmVcam.GetCinemachineComponent<CinemachineTransposer>().m_YDamping = 2;
         AracControl.instance.cmVcam.GetCinemachineComponent<CinemachineTransposer>().m_ZDamping = 2;
         AracControl.instance.cmVcam.GetCinemachineComponent<CinemachineTransposer>().m_YawDamping = 2;
+        AracControl.instance.anlikYakit = yakit;
         firstCrash = true;
         isContinue = true;
         levelPara = 0;

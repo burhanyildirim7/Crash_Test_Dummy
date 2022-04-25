@@ -14,8 +14,11 @@ public class UIController : MonoBehaviour
     public Text gamePlayScoreText, winScreenScoreText, levelNoText, tapToStartScoreText, totalElmasText;
     public Animator ScoreTextAnim;
     public TextMeshProUGUI heightLevelText, powerLevelText, heightCostText, powerCostText;
-    public Text paraText, bestDistanceText;
+    public Text paraText, bestDistanceText, yakitText;
     public Button powerButton, heightButton;
+    public Slider yakitSlider;
+    public GameObject yakitSliderPanel;
+    
 
     private int _sdkIcinLevel;
 
@@ -29,6 +32,10 @@ public class UIController : MonoBehaviour
     private void Start()
     {
         // StartUI();
+        AracControl.instance.anlikYakit = PlayerPrefs.GetFloat("yakit");
+        Debug.Log(AracControl.instance.anlikYakit);
+        Debug.Log(PlayerPrefs.GetFloat("yakit"));
+        SetSpeedSlider();
         bestDistanceText.text = " ";
         SetPowerAndLevelText();
         ControlButtonsActivate();
@@ -66,11 +73,18 @@ public class UIController : MonoBehaviour
     // TAPTOSTART TUSUNA BASILDISINDA  --- GIRIS EKRANINDA VE LEVEL BASLARINDA
     public void TapToStartButtonClick()
     {
+
         ZeminController.instance.collisionCount = 0;
         AracControl.instance.isAracActive = true;
+        AracControl.instance.dokunmatik = true;
+        AracControl.instance.distanceTravelled = 0;
+        AracControl.instance.speedMultiplier = 0;
         TapToStartPanel.SetActive(false);
         GameController.instance.PreStartingEvents();
-        PlayerController.instance.CalculateCoins1();
+      
+        yakitSliderPanel.SetActive(true);
+        SetSpeedSlider();
+        
     }
 
     // RESTART TUSUNA BASILDISINDA  --- LOOSE EKRANINDA
@@ -256,7 +270,11 @@ public class UIController : MonoBehaviour
         tapToStartScoreText.text = PlayerPrefs.GetInt("totalScore").ToString();
     }
 
-
+    public void SetSpeedSlider()
+	{
+        yakitSlider.value = AracControl.instance.anlikYakit / GameController.instance.yakit;
+        yakitText.text = AracControl.instance.anlikYakit.ToString(".0");
+	}
     public void SetPowerAndLevelText()
     {
         powerLevelText.text = "Level " + PlayerPrefs.GetInt("power").ToString();

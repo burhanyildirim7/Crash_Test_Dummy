@@ -44,8 +44,6 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         DOTween.Init();
-        //PlayerPrefs.DeleteAll();
-        // PlayerPrefs.SetInt("distance",100);
         StartingEvents();
         DistanceTextGroundForStart();
         zeminde = true;
@@ -285,8 +283,8 @@ public class PlayerController : MonoBehaviour
         onBoarding.SetActive(false);
         playerAnimator.enabled = false;
         float power = (float)GameController.instance.power + (float)GameController.instance.height;
-        float distance = Mathf.Lerp(0, 2500, power / 200);
-        if (power > 75) distance = Mathf.Lerp(1000, 4000, power / 200);
+        float distance = Mathf.Lerp(0, 2500*(AracControl.instance.speedMultiplier), power / 200);
+        if (power > 75) distance = Mathf.Lerp(1000, 4000 * (AracControl.instance.speedMultiplier), power / 200);
         tempDistance = distance;
         Vector3 endPositon = new(0, 1.4f, transform.position.z + distance);
         float jumpPower = 10f + power / 2f;
@@ -364,11 +362,11 @@ public class PlayerController : MonoBehaviour
 
         // zaman? ve yeri lerp ile hesaplamay? d???n
         float power = (float)GameController.instance.power + (float)GameController.instance.height;
-        float distance = Mathf.Lerp(0, 2500, power / 200);
-        if (power > 75) distance = Mathf.Lerp(1000, 4000, power / 200);
+        float distance = Mathf.Lerp(0, 2500 * (AracControl.instance.speedMultiplier), power / 200);
+        if (power > 75) distance = Mathf.Lerp(1000, 4000 * (AracControl.instance.speedMultiplier), power / 200);
         Vector3 endPosition = new(0, 1.4f, engel.transform.position.z + distance);
         float jumpPower = 10f + power / 2f;
-        float time = 1f + power / 4;
+        float time = 1f + power / 8;
         coinCalculator.transform.position = engel.transform.position + new Vector3(0, 3f, 0);
         coinCalculator.transform.DOJump(endPosition, jumpPower, 1, time).SetEase(Ease.Linear).OnComplete(() =>
         {
@@ -383,7 +381,7 @@ public class PlayerController : MonoBehaviour
         while (coinTime)
         {
             int rnd = Random.Range(0, 18);
-            if (GameController.instance.power + GameController.instance.height < 10) rnd = Random.Range(0, 12);
+            if (GameController.instance.power + GameController.instance.height < 10) rnd = Random.Range(0, 15);
             if (rnd == 1)
             {
                 GameObject coin = Instantiate(coinPrefab, coinCalculator.transform.position, Quaternion.identity);
@@ -391,7 +389,7 @@ public class PlayerController : MonoBehaviour
                 coin.transform.parent = paralarParenti.transform;
             }
 
-            yield return new WaitForEndOfFrame();
+            yield return new WaitForSeconds(.02f);
         }
 
     }

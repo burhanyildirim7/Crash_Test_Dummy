@@ -12,12 +12,17 @@ public class AracControl : MonoBehaviour
     public RoadMeshCreator roadMeshCreator;
     public static AracControl instance;
     public float speed = 5;
-    float distanceTravelled;
+    [HideInInspector]public float distanceTravelled;
     // way point ile movement
     public Transform[] waypoints;
     public int current = 0;
     public bool isAracActive = false;
     public GameObject kirikCamlarPrefab;
+    [HideInInspector]public float speedMultiplier = 0;
+    bool azaltma, hizlanma;
+    [HideInInspector]public bool dokunmatik,yokus;
+    public float anlikYakit;
+
 
 
 
@@ -34,17 +39,66 @@ public class AracControl : MonoBehaviour
         UpdateRoad();
     }
 
-   
-
-    private void FixedUpdate()
+	private void Update()
 	{
+        if (Input.GetMouseButton(0) && isAracActive && dokunmatik)
+        {
+            azaltma = false;
+            if(speedMultiplier < 1)speedMultiplier += Time.deltaTime;
+            if (anlikYakit > 0) anlikYakit -= Time.deltaTime*3;
+            
+            UIController.instance.SetSpeedSlider();
+        }
 
+        if (azaltma && isAracActive && !yokus)
+        {
+            if (speedMultiplier > 0) speedMultiplier -= Time.deltaTime;
+
+            if (speedMultiplier <= 0)
+            {
+                speedMultiplier = 0;
+                azaltma = false;
+            }
+        }
+
+        if (Input.GetMouseButtonUp(0) && isAracActive && dokunmatik)
+        {
+            azaltma = true;
+        }
+
+        if (transform.position.y < 2.9f) hizlanma = false;
+
+        if(hizlanma && isAracActive)
+		{
+            speedMultiplier += Time.deltaTime*0.1f;
+            azaltma = false;
+		}
+		//else if( transform.position.y < 2.9f && GameController.instance.height >= 2 && isAracActive)
+		//{
+  //          if (speedMultiplier > .4f) speedMultiplier -= Time.deltaTime * 0.05f;
+
+  //          if (speedMultiplier <= .4f)
+  //          {
+  //              speedMultiplier = .4f;
+  //              azaltma = false;
+  //          }
+  //      }
+        
+    }
+
+
+
+	private void FixedUpdate()
+	{
+        Debug.Log(speedMultiplier);
         if (isAracActive)
 		{
-            
+            if (speedMultiplier > 1) speedMultiplier = 1;
             speed = 8 + (GameController.instance.power + GameController.instance.height) / 10;
             if (speed > 30) speed = 30;
-            distanceTravelled += speed * Time.deltaTime;
+
+            distanceTravelled += speed * Time.deltaTime * speedMultiplier;
+            if (distanceTravelled == 0) distanceTravelled = 8; 
             transform.position = pathCreator.path.GetPointAtDistance(distanceTravelled);
             PlayerController.instance.cameraLookAtTarget.transform.position = transform.position + new Vector3 (0,5,0);
             transform.rotation = Quaternion.Euler(pathCreator.path.GetRotationAtDistance(distanceTravelled).eulerAngles.x, pathCreator.path.GetRotationAtDistance(distanceTravelled).eulerAngles.y, 0);          
@@ -61,12 +115,17 @@ public class AracControl : MonoBehaviour
         pathCreator.TriggerPathUpdate();
         roadMeshCreator.UpdateRoad();
 
+		
+
     }
 
     private void OnTriggerEnter(Collider other)
 	{
 		if (other.CompareTag("engel"))
 		{
+            yokus = false;
+            hizlanma = false;
+            UIController.instance.yakitSliderPanel.SetActive(false);
             StartCoroutine(PlayerController.instance.TimeSlow());
             cmVcam.GetCinemachineComponent<CinemachineTransposer>().m_XDamping = 0;
             cmVcam.GetCinemachineComponent<CinemachineTransposer>().m_YDamping = 0;
@@ -100,9 +159,19 @@ public class AracControl : MonoBehaviour
 		}
         else if (other.CompareTag("timeslow"))
 		{
+            PlayerController.instance.CalculateCoins1();
             Time.timeScale = .4f;
+            azaltma = false;
+            hizlanma = false;
+            dokunmatik = false;
            
+		}else if (other.CompareTag("hizlanma"))
+		{
+            hizlanma = true;
+            Debug.Log(hizlanma);
+            yokus = true;
 		}
+
 	}
 
     public IEnumerator DestroyMe(GameObject obj)
