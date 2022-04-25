@@ -40,11 +40,11 @@ public class GameController : MonoBehaviour
     void Start()
     {
          //PlayerPrefs.DeleteAll();
-        para = 250000;
-        PlayerPrefs.SetInt("para", para);
-        //PlayerPrefs.SetInt("power", power);
-        //PlayerPrefs.SetInt("height", height);
-        fiyatPower = PlayerPrefs.GetInt("fiyatp");
+        //para = 250000;
+  //      PlayerPrefs.SetInt("para", para);
+		//PlayerPrefs.SetInt("power", power);
+		//PlayerPrefs.SetInt("height", height);
+		fiyatPower = PlayerPrefs.GetInt("fiyatp");
         fiyatHeight = PlayerPrefs.GetInt("fiyath");
         if (fiyatPower == 0)
         {
@@ -58,9 +58,9 @@ public class GameController : MonoBehaviour
         }
 
 
-        //power = PlayerPrefs.GetInt("power");
-        //height = PlayerPrefs.GetInt("height");
-        yakit = PlayerPrefs.GetFloat("yakit");
+		power = PlayerPrefs.GetInt("power");
+		height = PlayerPrefs.GetInt("height");
+		yakit = PlayerPrefs.GetFloat("yakit");
 
         if (power == 0)
         {
@@ -112,6 +112,7 @@ public class GameController : MonoBehaviour
         }
         UIController.instance.SetPowerAndLevelText();
         UIController.instance.ControlButtonsActivate();
+        UIController.instance.SetSpeedSlider();
     }
 
     public void IncreaseHeight()

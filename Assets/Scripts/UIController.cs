@@ -101,6 +101,7 @@ public class UIController : MonoBehaviour
     // NEXT LEVEL TUSUNA BASILDIGINDA... WIN EKRANINDAKI BUTON
     public void NextLevelButtonClick()
     {
+        yakitSliderPanel.SetActive(true);
         _sdkIcinLevel++;
         PlayerPrefs.SetInt("SDKIcinLevel", _sdkIcinLevel);
         Elephant.LevelStarted(_sdkIcinLevel);
