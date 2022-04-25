@@ -94,8 +94,8 @@ public class AracControl : MonoBehaviour
         if (isAracActive)
 		{
             if (speedMultiplier > 1) speedMultiplier = 1;
-            speed = 8 + (GameController.instance.power + GameController.instance.height) / 10;
-            if (speed > 30) speed = 30;
+            speed = 12 + (GameController.instance.power + GameController.instance.height) / 10;
+            if (speed > 35) speed = 35;
 
             distanceTravelled += speed * Time.deltaTime * speedMultiplier;
             if (distanceTravelled == 0) distanceTravelled = 8; 

@@ -39,7 +39,7 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
-         //PlayerPrefs.DeleteAll();
+         PlayerPrefs.DeleteAll();
         //para = 250000;
   //      PlayerPrefs.SetInt("para", para);
 		//PlayerPrefs.SetInt("power", power);
