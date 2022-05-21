@@ -41,7 +41,7 @@ public class GameController : MonoBehaviour
     {
         //PlayerPrefs.DeleteAll();
         //para = 250000;
-        //      PlayerPrefs.SetInt("para", para);
+        //PlayerPrefs.SetInt("para", para);
         //PlayerPrefs.SetInt("power", power);
         //PlayerPrefs.SetInt("height", height);
         fiyatPower = PlayerPrefs.GetInt("fiyatp");
